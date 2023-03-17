@@ -34,7 +34,7 @@ export const exampleRouter = createTRPCRouter({
 
   chatGPT: publicProcedure
     .input(z.object({ text: z.string() }))
-    .query(async ({ input }) => {
+    .mutation(async ({ input }) => {
       const openai = new OpenAIApi(configuration);
 
       const messages = [];
