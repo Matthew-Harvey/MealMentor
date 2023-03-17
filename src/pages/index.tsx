@@ -84,7 +84,7 @@ const AuthShowcase: React.FC = () => {
         <p className="text-center text-2xl">
           {loggedin && <span>{auth.user?.name + " " + secretMessage}</span>}
         </p>
-        {loggedin ? <a href="/api/auth/logout">Logout</a> : <a href="/api/auth/login">Sign In</a>}
+        {loggedin ? <Link href="/api/auth/logout">Logout</Link> : <Link href="/api/auth/login">Sign In</Link>}
       </div>
     </>
   );
