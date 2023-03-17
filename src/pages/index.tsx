@@ -21,16 +21,18 @@ const Home: NextPage = () => {
 
   const [inputval, setInputVal] = useState("Hello!");
   const [hasEnter, setHasEnter] = useState(false);
+  const [queryCount, setQuerycount] = useState(1);
 
   const auth = useUser();
   let loggedin = false;
   if (auth.user){
     loggedin = true;
   }
-
+  
   async function QueryGPT  () {
     api_test.mutate({ text: inputval });
     setHasEnter(true);
+    setQuerycount(queryCount+1);
   }
 
   const handleKeyDown = (e: any) => {
@@ -48,7 +50,7 @@ const Home: NextPage = () => {
           </h1>
           {loggedin ? 
             <>
-              <input value={inputval} onChange={(e) => setInputVal(e.target.value)} className="p-2 rounded-xl text-black text-md w-80" type="search" onKeyDown={handleKeyDown} disabled={api_test.isLoading}></input>
+              <input value={inputval} onChange={(e) => setInputVal(e.target.value)} className="p-2 rounded-xl text-black text-md w-80" type="search" onKeyDown={handleKeyDown} disabled={api_test.isLoading || queryCount > 5}></input>
               <p className="text-2xl text-white">
                   {api_test.isLoading == true && "Loading response..."}
                   {hasEnter == false && "Please Type a question above"}
