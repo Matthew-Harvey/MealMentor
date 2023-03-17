@@ -33,15 +33,15 @@ export const exampleRouter = createTRPCRouter({
   }),
 
   chatGPT: publicProcedure
-    .query(async ({}) => {
+    .input(z.object({ text: z.string() }))
+    .query(async ({ input }) => {
       const openai = new OpenAIApi(configuration);
 
       const messages = [];
-      messages.push({ role: "user", content: "Hello again!" });
+      messages.push({ role: "user", content: input.text });
 
       // @ts-ignore
-      const completion = await openai.createChatCompletion({model: "gpt-3.5-turbo",messages: messages});
-
+      const completion = await openai.createChatCompletion({model: "gpt-3.5-turbo", messages: messages});
       const text = completion.data.choices[0]?.message;
 
       return {

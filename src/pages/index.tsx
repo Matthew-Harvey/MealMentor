@@ -7,12 +7,12 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { signIn, signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
+import { SignInButton, SignOutButton, useUser } from '@clerk/nextjs';
 
 const Home: NextPage = () => {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
-  const api_test = api.example.chatGPT.useQuery();
+  const api_test = api.example.chatGPT.useQuery({text: "Hello Chatgpt!"});  
   return (
     <>
       <Head>
@@ -67,25 +67,21 @@ const Home: NextPage = () => {
 export default Home;
 
 const AuthShowcase: React.FC = () => {
-  const { data: sessionData } = useSession();
+  const auth = useUser();
 
   const { data: secretMessage } = api.example.getSecretMessage.useQuery(
     undefined, // no input
-    { enabled: sessionData?.user !== undefined },
+    { enabled: auth.isSignedIn },
   );
 
   return (
-    <div className="flex flex-col items-center justify-center gap-4">
-      <p className="text-center text-2xl text-white">
-        {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
-        {secretMessage && <span> - {secretMessage}</span>}
-      </p>
-      <button
-        className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
-        onClick={sessionData ? () => void signOut() : () => void signIn()}
-      >
-        {sessionData ? "Sign out" : "Sign in"}
-      </button>
-    </div>
+    <>
+      <div className="flex flex-col items-center justify-center gap-4">
+        <p className="text-center text-2xl text-white">
+          {auth.isSignedIn && <span>{auth.user.firstName + " " + secretMessage}</span>}
+        </p>
+        {auth.isSignedIn ? <SignOutButton /> : <SignInButton />}
+      </div>
+    </>
   );
 };
