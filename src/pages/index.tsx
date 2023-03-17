@@ -8,7 +8,7 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { api } from "~/utils/api";
-import { SignInButton, SignOutButton, useUser } from '@clerk/nextjs';
+import { useUser } from '@auth0/nextjs-auth0/client';
 
 const Home: NextPage = () => {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
@@ -68,19 +68,23 @@ export default Home;
 
 const AuthShowcase: React.FC = () => {
   const auth = useUser();
+  let loggedin = false;
+  if (auth.user){
+    loggedin = true;
+  }
 
   const { data: secretMessage } = api.example.getSecretMessage.useQuery(
     undefined, // no input
-    { enabled: auth.isSignedIn },
+    { enabled: loggedin },
   );
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center gap-4">
-        <p className="text-center text-2xl text-white">
-          {auth.isSignedIn && <span>{auth.user.firstName + " " + secretMessage}</span>}
+      <div className="flex flex-col items-center justify-center gap-4 text-white">
+        <p className="text-center text-2xl">
+          {loggedin && <span>{auth.user?.name + " " + secretMessage}</span>}
         </p>
-        {auth.isSignedIn ? <SignOutButton /> : <SignInButton />}
+        {loggedin ? <a href="/api/auth/logout">Logout</a> : <a href="/api/auth/login">Sign In</a>}
       </div>
     </>
   );
