@@ -1,0 +1,2 @@
+export const demodetails = {email: "matthewtlharvey@gmail.com", email_verified: true, given_name: "Demo", locale: "en", name: "DemoUser", nickname: "Demo",
+picture: "https://lh3.googleusercontent.com/a/AGNmyxZAXDpNfoCMYVUV5bPaH43P1c4s3fAgKes1Xhg_ZA=s96-c", updated_at: "2023-03-17T23:18:13.828Z"};

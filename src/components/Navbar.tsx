@@ -1,17 +1,21 @@
-import { useUser } from "@auth0/nextjs-auth0/client";
-import { type NextPage } from "next";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import Link from "next/link";
 import { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
-const Navbar: NextPage = () => {
+
+const Navbar = ({loggedin, authuser} : any) => {
+
   const [navbar, setNavbar] = useState(false);
-  
-  const auth = useUser();
-  let loggedin = false;
-  if (auth.user){
-    loggedin = true;
+  const router = useRouter();
+
+  function demologin () {
+    void router.push( router.basePath + "?demo=true" );
   }
+
   return (
         <nav className="w-full bg-white shadow sticky top-0 z-10 flex-shrink-1">
             <div className="justify-between px-4 mx-auto lg:max-w-6xl md:items-center md:flex md:px-8">
@@ -64,15 +68,18 @@ const Navbar: NextPage = () => {
                     >
                         <ul className="items-center justify-center space-y-8 md:flex md:space-x-6 md:space-y-0">
                             <li className="text-gray-600 text-lg md:-mr-6">
-                              {loggedin && <span>{auth.user?.name}</span>}
+                              {loggedin && <span>{authuser?.name}</span>}
                             </li>
                             <li className="text-gray-600 text-lg md:mr-6 hidden md:flex">
-                              {loggedin && auth.user?.picture && <Image width="10" height="10" src={auth.user?.picture} alt="pfp" 
+                              {loggedin && authuser?.picture && <Image width="10" height="10" src={authuser?.picture} alt="pfp" 
                                 className="rounded-full m-2 w-8 h-8 ring-1 ring-black" referrerPolicy="no-referrer" />
                               }
                             </li>
                             <li className="text-gray-600 hover:text-purple-600 text-lg">
                               {loggedin ? <Link href="/api/auth/logout">Logout</Link> : <Link href="/api/auth/login">Sign In</Link>}
+                            </li>
+                            <li className="text-gray-600 hover:text-purple-600 text-lg">
+                              {loggedin == false && <button onClick={demologin}>Demo</button>}
                             </li>
                         </ul>
                     </div>

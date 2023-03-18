@@ -9,13 +9,28 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
-import { type NextPage } from "next";
+import { type GetServerSidePropsContext, type InferGetServerSidePropsType} from "next";
 import Link from "next/link";
 import { api } from "~/utils/api";
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { useState } from "react";
+import { demodetails } from "~/functions/demo";
+import Navbar from "~/components/Navbar";
 
-const Home: NextPage = () => {
+export function getServerSideProps(context : GetServerSidePropsContext) {
+  const isdemo = context.query.demo;
+  if (isdemo == "true") {
+    return {
+      props: { params: {isdemo: true, details: demodetails}}
+    }
+  } else {
+    return {
+      props: { params: {isdemo: false, details: demodetails}}
+    }
+  }
+}
+
+const Home = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
   const api_test = api.example.chatGPT.useMutation();
 
@@ -27,6 +42,10 @@ const Home: NextPage = () => {
   let loggedin = false;
   if (auth.user){
     loggedin = true;
+  }
+  if (params.isdemo == true) {
+    loggedin = true;
+    auth.user = params.details;
   }
   
   async function QueryGPT  () {
@@ -43,6 +62,7 @@ const Home: NextPage = () => {
 
   return (
     <>
+      <Navbar loggedin={loggedin} authuser={auth.user} />
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
           <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
