@@ -13,7 +13,7 @@ import { type GetServerSidePropsContext, type InferGetServerSidePropsType} from 
 import Link from "next/link";
 import { api } from "~/utils/api";
 import { useUser } from '@auth0/nextjs-auth0/client';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { demodetails } from "~/functions/demo";
 import Navbar from "~/components/Navbar";
 
@@ -31,8 +31,12 @@ export function getServerSideProps(context : GetServerSidePropsContext) {
 }
 
 const Home = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
   const api_test = api.example.chatGPT.useMutation();
+  const authInsert = api.db.InsertUser.useMutation();
+
+  //const resetdb = api.db.reset_tables.useQuery();
 
   const [inputval, setInputVal] = useState("Hello!");
   const [hasEnter, setHasEnter] = useState(false);
@@ -49,6 +53,9 @@ const Home = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>
   }
   
   async function QueryGPT  () {
+    console.log(auth.user)
+    console.log(JSON.parse(JSON.stringify(auth.user)));
+    authInsert.mutate({ user: JSON.parse(JSON.stringify(auth.user)) });
     api_test.mutate({ text: inputval });
     setHasEnter(true);
     setQuerycount(queryCount+1);

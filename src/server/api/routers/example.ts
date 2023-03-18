@@ -4,6 +4,7 @@
 
 import { z } from "zod";
 import {Configuration, OpenAIApi} from 'openai';
+import { connect } from "@planetscale/database";
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -15,6 +16,12 @@ import {
   protectedProcedure,
 } from "~/server/api/trpc";
 
+
+const config = {
+  url: process.env['DATABASE_URL']
+}
+
+
 export const exampleRouter = createTRPCRouter({
   hello: publicProcedure
     .input(z.object({ text: z.string() }))
@@ -23,10 +30,6 @@ export const exampleRouter = createTRPCRouter({
         greeting: `Hello ${input.text}`,
       };
     }),
-
-  getAll: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.example.findMany();
-  }),
 
   getSecretMessage: protectedProcedure.query(() => {
     return "you can now see this secret message!";
@@ -49,5 +52,18 @@ export const exampleRouter = createTRPCRouter({
         api_test: text,
       };
     }),
+
+  hello2: publicProcedure
+  .input(z.object({ text: z.string() }))
+  .query(async ({ input }) => {
+
+    const conn = connect(config)
+    const results = await conn.execute(`
+    SELECT * FROM users
+    `);
+    return {
+      greeting: `Hello ${input.text}`, results: results.rowsAffected
+    };
+  }),
 
 });
