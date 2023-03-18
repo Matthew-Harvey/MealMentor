@@ -13,7 +13,7 @@ import { type GetServerSidePropsContext, type InferGetServerSidePropsType} from 
 import Link from "next/link";
 import { api } from "~/utils/api";
 import { useUser } from '@auth0/nextjs-auth0/client';
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { demodetails } from "~/functions/demo";
 import Navbar from "~/components/Navbar";
 
