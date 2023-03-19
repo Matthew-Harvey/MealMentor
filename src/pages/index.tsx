@@ -11,10 +11,8 @@
 
 import { type GetServerSidePropsContext, type InferGetServerSidePropsType} from "next";
 import Link from "next/link";
-import { api } from "~/utils/api";
 import { useUser } from '@auth0/nextjs-auth0/client';
-import { useState } from "react";
-import { demodetails } from "~/functions/demo";
+import { demodetails, demologin } from "~/functions/demo";
 import Navbar from "~/components/Navbar";
 
 export function getServerSideProps(context : GetServerSidePropsContext) {
@@ -32,16 +30,6 @@ export function getServerSideProps(context : GetServerSidePropsContext) {
 
 const Home = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
 
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
-  const api_test = api.example.chatGPT.useMutation();
-  const authInsert = api.db.InsertUser.useMutation();
-
-  //const resetdb = api.db.reset_tables.useQuery();
-
-  const [inputval, setInputVal] = useState("Hello!");
-  const [hasEnter, setHasEnter] = useState(false);
-  const [queryCount, setQuerycount] = useState(1);
-
   const auth = useUser();
   let loggedin = false;
   if (auth.user){
@@ -50,21 +38,6 @@ const Home = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>
   if (params.isdemo == true) {
     loggedin = true;
     auth.user = params.details;
-  }
-  
-  async function QueryGPT  () {
-    console.log(auth.user)
-    console.log(JSON.parse(JSON.stringify(auth.user)));
-    authInsert.mutate({ user: JSON.parse(JSON.stringify(auth.user)) });
-    api_test.mutate({ text: inputval });
-    setHasEnter(true);
-    setQuerycount(queryCount+1);
-  }
-
-  const handleKeyDown = (e: any) => {
-    if (e.code === "Enter") {
-      QueryGPT();
-    }
   }
 
   return (
@@ -77,49 +50,62 @@ const Home = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>
           </h1>
           {loggedin ? 
             <>
-              <input value={inputval} onChange={(e) => setInputVal(e.target.value)} className="p-2 rounded-xl text-black text-md w-80" type="search" onKeyDown={handleKeyDown} disabled={api_test.isLoading || queryCount > 5}></input>
               <p className="text-2xl text-white">
-                  {api_test.isLoading == true && "Loading response..."}
-                  {hasEnter == false && "Please Type a question above"}
-                  {api_test.data ? api_test.data?.api_test?.content : ""}
+                  Please start looking for dishes by selecting below:
               </p>
             </>
             :
             <>
               <p className="text-2xl text-white">
-                  Please log in to query chatGPT.
+                  Please log in to find your next dish!
               </p>
             </>
           }
           
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8 hidden">
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-              href="https://create.t3.gg/en/usage/first-steps"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">First Steps →</h3>
-              <div className="text-lg">
-                Just the basics - Everything you need to know to set up your
-                database and authentication.
-              </div>
-            </Link>
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-              href="https://create.t3.gg/en/introduction"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">Documentation →</h3>
-              <div className="text-lg">
-                Learn more about Create T3 App, the libraries it uses, and how
-                to deploy it.
-              </div>
-            </Link>
-          </div>
-          <div className="flex flex-col items-center gap-2 hidden">
-            <p className="text-2xl text-white">
-              {hello.data ? hello.data.greeting : "Loading tRPC query..."}
-            </p>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
+            {loggedin == false ?
+             <>
+                <Link
+                  className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
+                  href="api/auth/login"
+                >
+                  <h3 className="text-2xl font-bold">Sign In →</h3>
+                  <div className="text-lg">
+                    Login using auth0 to save your data across devices.
+                  </div>
+                </Link>
+                <button
+                  className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20 text-left"
+                  onClick={demologin}
+                >
+                  <h3 className="text-2xl font-bold">Demo →</h3>
+                  <div className="text-lg">
+                    To have a look around as a demo user.
+                  </div>
+                </button>
+             </>
+             :
+             <>
+                <Link
+                  className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
+                  href="/find"
+                >
+                  <h3 className="text-2xl font-bold">Find dish →</h3>
+                  <div className="text-lg">
+                    Use ChatGPT API to find a dish and get steps for creation.
+                  </div>
+                </Link>
+                <Link
+                  className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20 text-left"
+                  href="/library"
+                >
+                  <h3 className="text-2xl font-bold">View Library →</h3>
+                  <div className="text-lg">
+                    Press here to view the favourite dishes within your collection.
+                  </div>
+                </Link>
+             </>
+            }
           </div>
         </div>
       </main>

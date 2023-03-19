@@ -4,17 +4,12 @@
 import Link from "next/link";
 import { useState } from "react";
 import Image from "next/image";
-import { useRouter } from "next/router";
+import { demologin } from "~/functions/demo";
 
 
 const Navbar = ({loggedin, authuser} : any) => {
 
   const [navbar, setNavbar] = useState(false);
-  const router = useRouter();
-
-  function demologin () {
-    void router.push( router.basePath + "?demo=true" );
-  }
 
   return (
         <nav className="w-full bg-white shadow sticky top-0 z-10 flex-shrink-1">
@@ -67,17 +62,22 @@ const Navbar = ({loggedin, authuser} : any) => {
                         }`}
                     >
                         <ul className="items-center justify-center space-y-8 md:flex md:space-x-6 md:space-y-0">
-                            <li className="text-gray-600 text-lg md:-mr-6">
-                              {loggedin && <span>{authuser?.name}</span>}
-                            </li>
-                            <li className="text-gray-600 text-lg md:mr-6 hidden md:flex">
-                              {loggedin && authuser?.picture && <Image width="10" height="10" src={authuser?.picture} alt="pfp" 
-                                className="rounded-full m-2 w-8 h-8 ring-1 ring-black" referrerPolicy="no-referrer" />
-                              }
-                            </li>
+                            <Link className="text-gray-600 text-lg hover:text-purple-600" href={"/find"}>
+                              {loggedin && <span>Find</span>}
+                            </Link>
+                            <Link className="text-gray-600 text-lg hover:text-purple-600" href={"/library"}>
+                              {loggedin && <span>Library</span>}
+                            </Link>
                             <li className="text-gray-600 hover:text-purple-600 text-lg">
                               {loggedin ? <Link href="/api/auth/logout">Logout</Link> : <Link href="/api/auth/login">Sign In</Link>}
                             </li>
+                            {loggedin && 
+                                <>
+                                    <Link className="text-gray-600 text-lg" href={"/profile"}>
+                                        <Image width="200" height="200" src={authuser?.picture} alt="pfp" className="rounded-full m-2 w-8 h-8" referrerPolicy="no-referrer" />
+                                    </Link>
+                                </>
+                            }
                             <li className="text-gray-600 hover:text-purple-600 text-lg">
                               {loggedin == false && <button onClick={demologin}>Demo</button>}
                             </li>
