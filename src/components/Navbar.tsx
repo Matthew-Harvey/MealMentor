@@ -62,25 +62,27 @@ const Navbar = ({loggedin, authuser} : any) => {
                         }`}
                     >
                         <ul className="items-center justify-center space-y-8 md:flex md:space-x-6 md:space-y-0">
-                            <Link className="text-gray-600 text-lg hover:text-purple-600" href={"/find"}>
-                              {loggedin && <span>Find</span>}
-                            </Link>
-                            <Link className="text-gray-600 text-lg hover:text-purple-600" href={"/library"}>
-                              {loggedin && <span>Library</span>}
-                            </Link>
-                            <li className="text-gray-600 hover:text-purple-600 text-lg">
-                              {loggedin ? <Link href="/api/auth/logout">Logout</Link> : <Link href="/api/auth/login">Sign In</Link>}
-                            </li>
+                            {loggedin && 
+                                <Link className="text-gray-600 text-lg hover:text-purple-600" href={"/find"}>
+                                    <p className="py-4 md:py-0">Find</p>
+                                </Link>
+                            }
+                            {loggedin && 
+                                <Link className="text-gray-600 text-lg hover:text-purple-600" href={"/library"}>
+                                    <p className="py-4 md:py-0">Library</p>
+                                </Link>
+                            }
+                            {loggedin ? <Link href="/api/auth/logout" className="text-gray-600 hover:text-purple-600 text-lg"><p className="py-4 md:py-0">Logout</p></Link> : <Link href="/api/auth/login" className="text-gray-600 hover:text-purple-600 text-lg"><p className="py-4 md:py-0">Sign In</p></Link>}
                             {loggedin && 
                                 <>
                                     <Link className="text-gray-600 text-lg" href={"/profile"}>
-                                        <Image width="200" height="200" src={authuser?.picture} alt="pfp" className="rounded-full m-2 w-8 h-8" referrerPolicy="no-referrer" />
+                                        <Image width="200" height="200" src={authuser?.picture} alt="pfp" className="rounded-full w-8 h-8" referrerPolicy="no-referrer" />
                                     </Link>
                                 </>
                             }
-                            <li className="text-gray-600 hover:text-purple-600 text-lg">
+                            <p className="text-gray-600 hover:text-purple-600 text-lg">
                               {loggedin == false && <button onClick={demologin}>Demo</button>}
-                            </li>
+                            </p>
                         </ul>
                     </div>
                 </div>
