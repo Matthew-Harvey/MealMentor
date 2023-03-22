@@ -11,16 +11,26 @@ import router from "next/router";
 const MealSearchResult = ({id, title, image, restaurantChain }: any) => {
   return (
     <>
-        <div key={id} className="group cursor-pointer relative inline-block text-center">
-            <button onClick={() => router.push("/dish/" + id)}>
-                <img id={title.toString()} src={image.toString()} alt={title.toString()} className="rounded-3xl w-48 p-2 h-70" />
-                <div className="absolute bottom-0 flex-col items-center hidden mb-6 group-hover:flex">
-                    <span className="z-10 p-3 text-md leading-none rounded-lg text-white whitespace-no-wrap bg-gradient-to-r from-blue-700 to-red-700 shadow-lg">
-                        {title} from {restaurantChain}
-                    </span>
+        <article key={id} className="rounded-xl border border-gray-700 bg-purple-800 p-4 m-4 hover:scale-105 ease-in-out transition">
+            <button className="flex items-center gap-4" onClick={() => router.push("/dish/" + id)}>
+                <img
+                alt="No Image"
+                src={image.toString()}
+                className="h-24 w-24 rounded-full object-cover"
+                />
+                <div>
+                <h3 className="text-lg font-medium text-white">{title}</h3>
+
+                <div className="flow-root">
+                    <ul className="-m-1 flex flex-wrap">
+                        <li className="p-1 leading-none">
+                            <p className="text-xs font-medium text-gray-300">{restaurantChain}</p>
+                        </li>
+                    </ul>
+                </div>
                 </div>
             </button>
-        </div>
+        </article>
     </>
   );
 };

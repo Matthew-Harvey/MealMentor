@@ -60,7 +60,6 @@ export const exampleRouter = createTRPCRouter({
       const MealCheck = await conn.execute("SELECT * FROM meals WHERE MealName LIKE ?", ["%" + input.text.toLowerCase() + "%"]);
       // eslint-disable-next-line @typescript-eslint/no-array-constructor
       let mealjson = new Array();
-      console.log(MealCheck.size);
       if (MealCheck.size >= 10) {
         for (let mealnum in MealCheck.rows) {
           // @ts-ignore
