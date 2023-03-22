@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-for-in-array */
 /* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
@@ -61,7 +62,11 @@ export const exampleRouter = createTRPCRouter({
       let mealjson = new Array();
       console.log(MealCheck.size);
       if (MealCheck.size >= 10) {
-        console.log(MealCheck.rows);
+        for (let mealnum in MealCheck.rows) {
+          // @ts-ignore
+          let meal = {id: MealCheck.rows[mealnum].MealID, title: MealCheck.rows[mealnum].MealName, image: JSON.parse(MealCheck.rows[mealnum].Response).image, restaurantChain: JSON.parse(MealCheck.rows[mealnum].Response).restaurantChain, servings: JSON.parse(MealCheck.rows[mealnum].Response).servings};
+          mealjson.push(meal);
+        }
       } else {
         const getResults = await axios.get("https://api.spoonacular.com/food/menuItems/search?query=" + input.text + "&apiKey=" + process.env.FOOD_APIKEY);
         for (let mealnum in getResults.data.menuItems) {
