@@ -7,7 +7,7 @@ import { connect } from "@planetscale/database";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure} from "~/server/api/trpc";
 
-const config = { url: process.env['DATABASE_URL'] }
+export const config = { url: process.env['DATABASE_URL'] }
 
 export const DBrouter = createTRPCRouter({
   reset_tables: publicProcedure
@@ -16,14 +16,15 @@ export const DBrouter = createTRPCRouter({
     await conn.execute(
     `
 
-      DROP TABLE IF EXISTS meal_history, users
+      DROP TABLE IF EXISTS meal_history, users, meals
 
     `);
     await conn.execute(
     `
 
     CREATE TABLE meal_history (
-      UserID int
+      UserID varchar(255) NOT NULL,
+      MealID varchar(255) NOT NULL
     )
 
     `);
@@ -31,7 +32,7 @@ export const DBrouter = createTRPCRouter({
     `
 
     CREATE TABLE users (
-      UserID varchar(255),
+      UserID varchar(255) NOT NULL,
       Picture varchar(255),
       Name varchar(255),
       Nickname varchar(255),
@@ -39,10 +40,22 @@ export const DBrouter = createTRPCRouter({
       GivenName varchar(255),
       EmailVerified varchar(255),
       Email varchar(255),
-      Updated varchar(255)
+      Updated varchar(255),
+      PRIMARY KEY (UserID)
     )
 
     `);
+    await conn.execute(
+      `
+  
+      CREATE TABLE meals (
+        MealID varchar(255) NOT NULL,
+        MealName varchar(255) NOT NULL,
+        Response varchar(255),
+        PRIMARY KEY (MealID)
+      )
+  
+      `);
     return {
       results: "complete"
     };
@@ -51,7 +64,7 @@ export const DBrouter = createTRPCRouter({
   InsertUser: publicProcedure
   .input(z.object({ user: z.object({name: z.string()}).catchall(z.any())}))
   .mutation(async ({ input }) => {
-    const conn = connect(config)
+    const conn = connect(config);
     const doesidexist = await conn.execute("SELECT UserID FROM users WHERE UserID = ?", [input.user.sub]);
     let runinsert = true;
     for (let x in doesidexist.rows) {

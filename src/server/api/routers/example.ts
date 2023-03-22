@@ -1,7 +1,10 @@
-/* eslint-disable @typescript-eslint/no-for-in-array */
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/restrict-plus-operands */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-
 import { z } from "zod";
 import {Configuration, OpenAIApi} from 'openai';
 import { connect } from "@planetscale/database";
@@ -15,12 +18,8 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
-
-
-const config = {
-  url: process.env['DATABASE_URL']
-}
-
+import axios from "axios";
+import { config } from "./db_actions";
 
 export const exampleRouter = createTRPCRouter({
   hello: publicProcedure
@@ -53,17 +52,28 @@ export const exampleRouter = createTRPCRouter({
       };
     }),
 
-  hello2: publicProcedure
-  .input(z.object({ text: z.string() }))
-  .query(async ({ input }) => {
-
-    const conn = connect(config)
-    const results = await conn.execute(`
-    SELECT * FROM users
-    `);
-    return {
-      greeting: `Hello ${input.text}`, results: results.rowsAffected
-    };
-  }),
-
+  getApiResults: publicProcedure
+    .input(z.object({ text: z.string() }))
+    .mutation(async ({ input }) => {
+      const conn = connect(config);
+      const MealCheck = await conn.execute("SELECT * FROM meals WHERE MealName LIKE ?", ["%" + input.text.toLowerCase() + "%"]);
+      // eslint-disable-next-line @typescript-eslint/no-array-constructor
+      let mealjson = new Array();
+      console.log(MealCheck.size);
+      if (MealCheck.size >= 10) {
+        console.log(MealCheck.rows);
+      } else {
+        const getResults = await axios.get("https://api.spoonacular.com/food/menuItems/search?query=" + input.text + "&apiKey=" + process.env.FOOD_APIKEY);
+        for (let mealnum in getResults.data.menuItems) {
+          let meal = {id: getResults.data.menuItems[mealnum].id, title: getResults.data.menuItems[mealnum].title, image: getResults.data.menuItems[mealnum].image,
+            restaurantChain: getResults.data.menuItems[mealnum].restaurantChain, servings: getResults.data.menuItems[mealnum].servings
+          };
+          mealjson.push(meal);
+          await conn.execute("INSERT IGNORE INTO meals (MealID, MealName, Response) VALUES (?,?,?)", 
+            [getResults.data.menuItems[mealnum].id, getResults.data.menuItems[mealnum].title, JSON.stringify(meal)]
+          )
+        }
+      }
+      return { mealjson: JSON.stringify(mealjson)};
+    }),
 });

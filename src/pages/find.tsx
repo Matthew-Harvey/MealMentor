@@ -15,6 +15,7 @@ import { useUser } from '@auth0/nextjs-auth0/client';
 import { useState } from "react";
 import { demodetails } from "~/functions/demo";
 import Navbar from "~/components/Navbar";
+import MealSearchResult from "~/components/MealSearchResult";
 
 export function getServerSideProps(context : GetServerSidePropsContext) {
   const isdemo = context.query.demo;
@@ -30,12 +31,13 @@ export function getServerSideProps(context : GetServerSidePropsContext) {
 }
 
 const Find = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const api_test = api.example.chatGPT.useMutation();
+  const queryGPT = api.example.chatGPT.useMutation();
   const authInsert = api.db.InsertUser.useMutation();
+  const api_test = api.example.getApiResults.useMutation();
 
   //const resetdb = api.db.reset_tables.useQuery();
 
-  const [inputval, setInputVal] = useState("Hello!");
+  const [inputval, setInputVal] = useState("Pasta");
   const [hasEnter, setHasEnter] = useState(false);
   const [queryCount, setQuerycount] = useState(1);
 
@@ -49,17 +51,22 @@ const Find = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>
     auth.user = params.details;
   }
   
-  async function QueryGPT  () {
+  async function QueryFind  () {
     authInsert.mutate({ user: JSON.parse(JSON.stringify(auth.user)) });
     api_test.mutate({ text: inputval });
     setHasEnter(true);
-    setQuerycount(queryCount+1);
+    setQuerycount(queryCount);
   }
 
   const handleKeyDown = (e: any) => {
     if (e.code === "Enter") {
-      QueryGPT();
+      QueryFind();
     }
+  }
+
+  let display_result;
+  if (api_test.data?.mealjson) {
+    display_result = JSON.parse(api_test.data?.mealjson);
   }
 
   return (
@@ -73,12 +80,20 @@ const Find = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>
                 </h1>
                 {loggedin ? 
                     <>
-                    <input value={inputval} onChange={(e) => setInputVal(e.target.value)} className="p-2 rounded-xl text-black text-md w-80" type="search" onKeyDown={handleKeyDown} disabled={api_test.isLoading || queryCount > 5}></input>
-                    <p className="text-2xl text-white">
-                        {api_test.isLoading == true && "Loading response..."}
-                        {hasEnter == false && "Please Type a question above"}
-                        {api_test.data ? api_test.data?.api_test?.content : ""}
-                    </p>
+                      <input value={inputval} onChange={(e) => setInputVal(e.target.value)} className="p-2 rounded-xl text-black text-md w-80" type="search" onKeyDown={handleKeyDown} disabled={api_test.isLoading || queryCount > 5}></input>
+                      <div className="text-2xl text-white">
+                        <>
+                          {api_test.isLoading == true && "Loading response..."}
+                          {hasEnter == false && "Please Type a question above"}
+                          {api_test.data ? 
+                            display_result.map((meal: any) => 
+                                <>
+                                    <MealSearchResult title={meal.title} id={meal.id} image={meal.image} restaurantChain={meal.restaurantChain} />
+                                </>
+                              )
+                          : ""}
+                        </>
+                      </div>
                     </>
                     :
                     <>
