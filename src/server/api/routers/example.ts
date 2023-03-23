@@ -108,4 +108,12 @@ export const exampleRouter = createTRPCRouter({
       }
       return { mealjson: JSON.stringify(mealjson)};
     }),
+
+  addDishLibrary: publicProcedure
+    .input(z.object({ dishid: z.string(), userid: z.string() }))
+    .mutation(async ({ input }) => {
+      const conn = connect(config);
+      await conn.execute("INSERT IGNORE INTO meal_history (MealID, UserID) VALUES (?,?)", [input.dishid, input.userid]);
+      return { result: "Added into meal_history"};
+    }),
 });

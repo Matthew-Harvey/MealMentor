@@ -24,7 +24,8 @@ export const DBrouter = createTRPCRouter({
 
     CREATE TABLE meal_history (
       UserID varchar(255) NOT NULL,
-      MealID varchar(255) NOT NULL
+      MealID varchar(255) NOT NULL,
+      PRIMARY KEY (UserID, MealID)
     )
 
     `);

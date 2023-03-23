@@ -56,9 +56,18 @@ const DishPage = ({ params }: InferGetServerSidePropsType<typeof getServerSidePr
         auth.user = params.details;
     }
 
+    // @ts-ignore
+    const AddLibrary = api.example.addDishLibrary.useMutation({dishid: params.dishid, userid: auth.user?.sub});
+
+    function AddToLibrary(){
+        console.log({dishid: params.dishid, userid: auth.user?.sub})
+        // @ts-ignore
+        AddLibrary.mutate({dishid: params.dishid, userid: auth.user?.sub});
+    }
+
     return (
         <>
-        <Navbar loggedin={loggedin} authuser={auth.user} />
+        <Navbar loggedin={loggedin} authuser={auth.user} dishid={params.dishid} />
         <div className="min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c]">
             <main className="flex flex-col items-center justify-center">
                 <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
@@ -69,6 +78,14 @@ const DishPage = ({ params }: InferGetServerSidePropsType<typeof getServerSidePr
                         <p className="text-white">{queryGPT.data?.text_result}</p>
                         :
                         <p className="text-white">Generating instructions..</p>
+                    }
+                    {loggedin ?
+                        <>
+                            <button onClick={AddToLibrary} className="p-3 bg-pink-400 text-white transition hover:scale-105 rounded-lg">Add to library</button>
+                        </>
+                    :
+                        <>
+                        </>
                     }
                 </div>
             </main>

@@ -6,5 +6,5 @@ sid: "bE2PcyB07BnDBzrOPmoFwIN-ZznZcZn8"};
 
 
 export function demologin () {
-    void router.push( router.basePath + "?demo=true" );
+    void router.push( router.asPath + "?demo=true" );
 }
