@@ -52,6 +52,7 @@ export const DBrouter = createTRPCRouter({
         MealID varchar(255) NOT NULL,
         MealName varchar(255) NOT NULL,
         Response varchar(255),
+        HowToMake TEXT,
         PRIMARY KEY (MealID)
       )
   

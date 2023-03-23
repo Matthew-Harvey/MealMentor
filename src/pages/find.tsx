@@ -31,7 +31,7 @@ export function getServerSideProps(context : GetServerSidePropsContext) {
 }
 
 const Find = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const queryGPT = api.example.chatGPT.useMutation();
+  const queryGPT = api.example.mutateGPT.useMutation();
   const authInsert = api.db.InsertUser.useMutation();
   const api_test = api.example.getApiResults.useMutation();
 

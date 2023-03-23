@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-for-in-array */
 /* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
@@ -35,7 +36,7 @@ export const exampleRouter = createTRPCRouter({
     return "you can now see this secret message!";
   }),
 
-  chatGPT: publicProcedure
+  mutateGPT: publicProcedure
     .input(z.object({ text: z.string() }))
     .mutation(async ({ input }) => {
       const openai = new OpenAIApi(configuration);
@@ -48,9 +49,36 @@ export const exampleRouter = createTRPCRouter({
       const text = completion.data.choices[0]?.message;
 
       return {
-        // @ts-ignore
         api_test: text,
       };
+    }),
+
+  HowToMakeDishGPT: publicProcedure
+    .input(z.object({ text: z.string(), id: z.any() }))
+    .query(async ({ input }) => {
+
+      const conn = connect(config);
+      const HowToMakeCheck = await conn.execute("SELECT HowToMake FROM meals WHERE MealID = ?", [input.id]);
+      // @ts-ignore
+      if (HowToMakeCheck.rows[0].HowToMake != null) {
+        return {
+          // @ts-ignore
+          text_result: HowToMakeCheck.rows[0].HowToMake.toString()
+        };
+      } else {
+        const openai = new OpenAIApi(configuration);
+        const messages = [];
+        messages.push({ role: "user", content: input.text });
+        // @ts-ignore
+        const completion = await openai.createChatCompletion({model: "gpt-3.5-turbo", messages: messages});
+        const text = completion.data.choices[0]?.message;
+        await conn.execute("UPDATE meals SET HowToMake = ? WHERE MealID = ?", 
+          [text?.content, input.id]
+        )
+        return {
+          text_result: text?.content,
+        };
+      }
     }),
 
   getApiResults: publicProcedure
