@@ -39,7 +39,7 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
 
     if (getDetails.size > 0) {
         const conn = connect(config);
-        const LibraryCheck = await conn.execute("SELECT * FROM meal_history WHERE MealID = ? AND UserID = ?", [dishid, user?.user.sud]);
+        const LibraryCheck = await conn.execute("SELECT * FROM meal_history WHERE MealID = ? AND UserID = ?", [dishid, user?.user.sub]);
         let islibrary = false;
         if (LibraryCheck.size > 0){
             islibrary = true;
@@ -70,18 +70,18 @@ const DishPage = ({ params }: InferGetServerSidePropsType<typeof getServerSidePr
     const queryGPT = api.example.HowToMakeDishGPT.useQuery({text: "Please give some instructs to make " + params.name + " from " + dishdetails.restaurantChain, id: params.dishid});
 
     // @ts-ignore
-    const AddLibrary = api.example.addDishLibrary.useMutation({dishid: params.dishid, userid: params.user.sub});const RemoveLibrary = api.example.addDishLibrary.useMutation({dishid: params.dishid, userid: params.user.sub});
+    const AddLibrary = api.example.addDishLibrary.useMutation({dishid: params.dishid, userid: params.user.sub});const RemoveLibrary = api.example.removeDishLibrary.useMutation({dishid: params.dishid, userid: params.user.sub});
     const [AddedLib, SetAddedLib] = useState(params.islibrary);
 
     function AddToLibrary(){
         // @ts-ignore
         AddLibrary.mutate({dishid: params.dishid, userid: params.user.sub});
-        SetAddedLib(false);
+        SetAddedLib(true);
     }
     function RemoveFromLibrary(){
         // @ts-ignore
         RemoveLibrary.mutate({dishid: params.dishid, userid: params.user.sub});
-        SetAddedLib(true);
+        SetAddedLib(false);
     }
 
     return (
@@ -101,9 +101,9 @@ const DishPage = ({ params }: InferGetServerSidePropsType<typeof getServerSidePr
                     {params.loggedin ?
                         <>
                             {AddedLib ?
-                                <button onClick={AddToLibrary} className="p-3 bg-green-400 text-white transition hover:scale-105 rounded-lg">Add to library</button>
-                                :
                                 <button onClick={RemoveFromLibrary} className="p-3 bg-red-400 text-white transition hover:scale-105 rounded-lg">Remove from library</button>
+                                :
+                                <button onClick={AddToLibrary} className="p-3 bg-green-400 text-white transition hover:scale-105 rounded-lg">Add to library</button>
                             }
                         </>
                     :

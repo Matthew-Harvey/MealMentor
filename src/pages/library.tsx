@@ -32,19 +32,22 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
   }
 
   const conn = connect(config);
-  const LibraryCheck = await conn.execute("SELECT * FROM meal_history WHERE UserID = ?", [user?.user.sud]);
-  for (let x in LibraryCheck.rows) {
+  const LibraryCheck = await conn.execute("SELECT * FROM meal_history WHERE UserID = ?", [user?.user.sub]);
+  const arr = [];
+  for (const x in LibraryCheck.rows) {
       // @ts-ignore
-      //const await conn.execute("SELECT * FROM meal_history WHERE UserID = ?", [user?.user.sud]);
+      const dish =  await conn.execute("SELECT * FROM meals WHERE MealID = ?", [LibraryCheck.rows[x].MealID]);
+      // @ts-ignore
+      try{arr.push(dish.rows[0].MealName)}catch{}
   }
 
   if (isdemo == "true" && loggedin == true) {
     return {
-      props: { params: {isdemo: true, details: demodetails, loggedin, user:user?.user}}
+      props: { params: {isdemo: true, details: demodetails, loggedin, user:user?.user, lib: arr}}
     }
   } if (loggedin == true) {
     return {
-      props: { params: {isdemo: false, details: demodetails, loggedin, user:user?.user}}
+      props: { params: {isdemo: false, details: demodetails, loggedin, user:user?.user, lib: arr}}
     }
   } else {
     return {
@@ -68,6 +71,11 @@ const Library = ({ params }: InferGetServerSidePropsType<typeof getServerSidePro
                     <span className="text-[hsl(280,100%,70%)]">Your </span>Library
                 </h1>
             </div>
+            {params.lib.map((meal: any) => 
+              <>
+                <p className="text-white py-2">{meal}</p>
+              </>
+            )}
         </main>
       </div>
     </>
