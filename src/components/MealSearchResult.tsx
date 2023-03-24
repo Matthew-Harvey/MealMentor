@@ -8,11 +8,11 @@
 
 import router from "next/router";
 
-const MealSearchResult = ({id, title, image, restaurantChain }: any) => {
+const MealSearchResult = ({id, title, image, restaurantChain, isdemo }: any) => {
   return (
     <>
         <article key={id} className="rounded-xl border border-gray-700 bg-purple-800 p-4 m-4 hover:scale-105 ease-in-out transition">
-            <button className="flex items-center gap-4" onClick={() => router.push("/dish/" + id)}>
+            <button className="flex items-center gap-4" onClick={() => router.push("/dish/" + id + isdemo)}>
                 <img
                 alt="No Image"
                 src={image.toString()}

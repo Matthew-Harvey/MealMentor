@@ -40,6 +40,13 @@ const Home = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>
     auth.user = params.details;
   }
 
+  let isdemo = "";
+  try {
+        if (auth.user?.sub == "google-oauth2|143087949221293105235") {
+        isdemo = "?demo=true"
+        }
+    } catch {}
+
   return (
     <>
       <Navbar loggedin={loggedin} authuser={auth.user} />
@@ -88,7 +95,7 @@ const Home = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>
              <>
                 <Link
                   className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-                  href="/find"
+                  href={"/find" + isdemo}
                 >
                   <h3 className="text-2xl font-bold">Find dish →</h3>
                   <div className="text-lg">
@@ -97,7 +104,7 @@ const Home = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>
                 </Link>
                 <Link
                   className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20 text-left"
-                  href="/library"
+                  href={"/library" + isdemo}
                 >
                   <h3 className="text-2xl font-bold">View Library →</h3>
                   <div className="text-lg">

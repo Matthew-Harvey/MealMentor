@@ -23,7 +23,7 @@ const Navbar = ({loggedin, authuser} : any) => {
             <div className="justify-between px-4 mx-auto lg:max-w-6xl md:items-center md:flex md:px-8">
                 <div>
                     <div className="flex items-center justify-between py-3 md:py-5 md:block">
-                        <Link href={"/"}><h2 className="text-3xl font-bold"><span className="text-[hsl(280,100%,70%)]">Meal</span>Mentor</h2></Link>
+                        <Link href={"/" + isdemo}><h2 className="text-3xl font-bold"><span className="text-[hsl(280,100%,70%)]">Meal</span>Mentor</h2></Link>
                         <div className="md:hidden">
                             <button
                                 className="p-2 text-gray-700 rounded-md outline-none focus:border-gray-400 focus:border"

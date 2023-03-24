@@ -11,7 +11,6 @@
 
 import { type GetServerSidePropsContext, type InferGetServerSidePropsType} from "next";
 import { api } from "~/utils/api";
-import { useUser } from '@auth0/nextjs-auth0/client';
 import { useState } from "react";
 import { demodetails } from "~/functions/demo";
 import Navbar from "~/components/Navbar";
@@ -51,7 +50,7 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
 }
 
 const Find = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const queryGPT = api.example.mutateGPT.useMutation();
+  //const queryGPT = api.example.mutateGPT.useMutation();
   const authInsert = api.db.InsertUser.useMutation();
   const api_test = api.example.getApiResults.useMutation();
 
@@ -79,6 +78,13 @@ const Find = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>
     display_result = JSON.parse(api_test.data?.mealjson);
   }
 
+  let isdemo = "";
+  try {
+        if (params.user?.sub == "google-oauth2|143087949221293105235") {
+        isdemo = "?demo=true"
+        }
+  } catch {}
+
   return (
     <>
       <Navbar loggedin={params.loggedin} authuser={params.user} />
@@ -98,7 +104,7 @@ const Find = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>
                           {api_test.data ? 
                             display_result.map((meal: any) => 
                                 <>
-                                    <MealSearchResult title={meal.title} id={meal.id} image={meal.image} restaurantChain={meal.restaurantChain} />
+                                    <MealSearchResult title={meal.title} id={meal.id} image={meal.image} restaurantChain={meal.restaurantChain} isdemo={isdemo} />
                                 </>
                               )
                           : ""}
