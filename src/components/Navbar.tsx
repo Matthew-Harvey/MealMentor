@@ -11,6 +11,13 @@ const Navbar = ({loggedin, authuser} : any) => {
 
   const [navbar, setNavbar] = useState(false);
 
+  let isdemo = "";
+  try {
+        if (authuser.sub == "google-oauth2|143087949221293105235") {
+        isdemo = "?demo=true"
+        }
+    } catch {}
+
   return (
         <nav className="w-full bg-white shadow sticky top-0 z-10 flex-shrink-1">
             <div className="justify-between px-4 mx-auto lg:max-w-6xl md:items-center md:flex md:px-8">
@@ -63,19 +70,19 @@ const Navbar = ({loggedin, authuser} : any) => {
                     >
                         <ul className="items-center justify-center space-y-8 md:flex md:space-x-6 md:space-y-0">
                             {loggedin && 
-                                <Link className="text-gray-600 text-lg hover:text-purple-600" href={"/find"}>
+                                <Link className="text-gray-600 text-lg hover:text-purple-600" href={"/find" + isdemo}>
                                     <p className="py-4 md:py-0">Find</p>
                                 </Link>
                             }
                             {loggedin && 
-                                <Link className="text-gray-600 text-lg hover:text-purple-600" href={"/library"}>
+                                <Link className="text-gray-600 text-lg hover:text-purple-600" href={"/library" + isdemo}>
                                     <p className="py-4 md:py-0">Library</p>
                                 </Link>
                             }
                             {loggedin ? <Link href="/api/auth/logout" className="text-gray-600 hover:text-purple-600 text-lg"><p className="py-4 md:py-0">Logout</p></Link> : <Link href="/api/auth/login" className="text-gray-600 hover:text-purple-600 text-lg"><p className="py-4 md:py-0">Sign In</p></Link>}
                             {loggedin && 
                                 <>
-                                    <Link className="text-gray-600 text-lg" href={"/profile"}>
+                                    <Link className="text-gray-600 text-lg" href={"/profile" + isdemo}>
                                         <Image width="200" height="200" src={authuser?.picture} alt="pfp" className="rounded-full w-8 h-8" referrerPolicy="no-referrer" />
                                     </Link>
                                 </>

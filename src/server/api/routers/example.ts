@@ -116,4 +116,12 @@ export const exampleRouter = createTRPCRouter({
       await conn.execute("INSERT IGNORE INTO meal_history (MealID, UserID) VALUES (?,?)", [input.dishid, input.userid]);
       return { result: "Added into meal_history"};
     }),
+
+  removeDishLibrary: publicProcedure
+    .input(z.object({ dishid: z.string(), userid: z.string() }))
+    .mutation(async ({ input }) => {
+      const conn = connect(config);
+      await conn.execute("DELETE FROM meal_history WHERE MealID = ? AND UserID = ?", [input.dishid, input.userid]);
+      return { result: "Removed from meal_history"};
+    }),
 });

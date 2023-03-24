@@ -12,62 +12,81 @@
 
 import { type GetServerSidePropsContext, type InferGetServerSidePropsType} from "next";
 import { api } from "~/utils/api";
-import { useUser } from '@auth0/nextjs-auth0/client';
 import { demodetails } from "~/functions/demo";
 import Navbar from "~/components/Navbar";
 import { connect } from "@planetscale/database";
 import { config } from "~/server/api/routers/db_actions";
-import Router from "next/router";
+import { useState } from "react";
+import { getSession } from "@auth0/nextjs-auth0";
 
 export async function getServerSideProps(context : GetServerSidePropsContext) {
-  const isdemo = context.query.demo;
-  const dishid = context.query.dishid;
+    const isdemo = context.query.demo;
+    const dishid = context.query.dishid;
 
-  const conn = connect(config);
-  const getDetails = await conn.execute("SELECT * FROM meals WHERE MealID = ?", [dishid]);
-  if (getDetails.size > 0) {
+    const conn = connect(config);
+    const getDetails = await conn.execute("SELECT * FROM meals WHERE MealID = ?", [dishid]);
+
+    let user = await getSession(context.req, context.res);
+    let loggedin = false;
+    if (user?.user){
+        loggedin = true;
+    }
     if (isdemo == "true") {
-        return {
-            // @ts-ignore
-            props: { params: {isdemo: true, details: demodetails, dishid, name: getDetails.rows[0].MealName, dishdetails: getDetails.rows[0].Response}}
+        loggedin = true;
+        // @ts-ignore
+        user = {};user.user = demodetails;
+    }
+
+    if (getDetails.size > 0) {
+        const conn = connect(config);
+        const LibraryCheck = await conn.execute("SELECT * FROM meal_history WHERE MealID = ? AND UserID = ?", [dishid, user?.user.sud]);
+        let islibrary = false;
+        if (LibraryCheck.size > 0){
+            islibrary = true;
+        }
+        if (isdemo == "true") {
+            return {
+                // @ts-ignore
+                props: { params: {isdemo: true, details: demodetails, dishid, name: getDetails.rows[0].MealName, dishdetails: getDetails.rows[0].Response, loggedin, user:user.user, islibrary:islibrary}}
+            }
+        } else {
+            return {
+                // @ts-ignore
+                props: { params: {isdemo: false, details: demodetails, dishid, name: getDetails.rows[0].MealName, dishdetails: getDetails.rows[0].Response, loggedin, user:user.user, islibrary:islibrary}}
+            }
         }
     } else {
         return {
-            // @ts-ignore
-            props: { params: {isdemo: false, details: demodetails, dishid, name: getDetails.rows[0].MealName, dishdetails: getDetails.rows[0].Response}}
+            redirect: {
+                permanent: false,
+                destination: "/",
+            }
         }
     }
-  } else {
-    Router.push(Router.basePath + "/404");
-  }
 }
 
 const DishPage = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
     const dishdetails = JSON.parse(params.dishdetails);
     const queryGPT = api.example.HowToMakeDishGPT.useQuery({text: "Please give some instructs to make " + params.name + " from " + dishdetails.restaurantChain, id: params.dishid});
 
-    const auth = useUser();
-    let loggedin = false;
-    if (auth.user){
-        loggedin = true;
-    }
-    if (params.isdemo == true) {
-        loggedin = true;
-        auth.user = params.details;
-    }
-
     // @ts-ignore
-    const AddLibrary = api.example.addDishLibrary.useMutation({dishid: params.dishid, userid: auth.user?.sub});
+    const AddLibrary = api.example.addDishLibrary.useMutation({dishid: params.dishid, userid: params.user.sub});const RemoveLibrary = api.example.addDishLibrary.useMutation({dishid: params.dishid, userid: params.user.sub});
+    const [AddedLib, SetAddedLib] = useState(params.islibrary);
 
     function AddToLibrary(){
-        console.log({dishid: params.dishid, userid: auth.user?.sub})
         // @ts-ignore
-        AddLibrary.mutate({dishid: params.dishid, userid: auth.user?.sub});
+        AddLibrary.mutate({dishid: params.dishid, userid: params.user.sub});
+        SetAddedLib(false);
+    }
+    function RemoveFromLibrary(){
+        // @ts-ignore
+        RemoveLibrary.mutate({dishid: params.dishid, userid: params.user.sub});
+        SetAddedLib(true);
     }
 
     return (
         <>
-        <Navbar loggedin={loggedin} authuser={auth.user} dishid={params.dishid} />
+        <Navbar loggedin={params.loggedin} authuser={params.user} dishid={params.dishid} />
         <div className="min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c]">
             <main className="flex flex-col items-center justify-center">
                 <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
@@ -79,9 +98,13 @@ const DishPage = ({ params }: InferGetServerSidePropsType<typeof getServerSidePr
                         :
                         <p className="text-white">Generating instructions..</p>
                     }
-                    {loggedin ?
+                    {params.loggedin ?
                         <>
-                            <button onClick={AddToLibrary} className="p-3 bg-pink-400 text-white transition hover:scale-105 rounded-lg">Add to library</button>
+                            {AddedLib ?
+                                <button onClick={AddToLibrary} className="p-3 bg-green-400 text-white transition hover:scale-105 rounded-lg">Add to library</button>
+                                :
+                                <button onClick={RemoveFromLibrary} className="p-3 bg-red-400 text-white transition hover:scale-105 rounded-lg">Remove from library</button>
+                            }
                         </>
                     :
                         <>

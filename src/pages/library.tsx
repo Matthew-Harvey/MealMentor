@@ -10,37 +10,57 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
 import { type GetServerSidePropsContext, type InferGetServerSidePropsType} from "next";
-import { useUser } from '@auth0/nextjs-auth0/client';
 import { demodetails } from "~/functions/demo";
 import Navbar from "~/components/Navbar";
+import { connect } from "@planetscale/database";
+import { config } from "~/server/api/routers/db_actions";
+import { getSession } from "@auth0/nextjs-auth0";
 
-export function getServerSideProps(context : GetServerSidePropsContext) {
+export async function getServerSideProps(context : GetServerSidePropsContext) {
+
   const isdemo = context.query.demo;
+
+  let user = await getSession(context.req, context.res);
+  let loggedin = false;
+  if (user?.user){
+      loggedin = true;
+  }
   if (isdemo == "true") {
+      loggedin = true;
+      // @ts-ignore
+      user = {};user.user = demodetails;
+  }
+
+  const conn = connect(config);
+  const LibraryCheck = await conn.execute("SELECT * FROM meal_history WHERE UserID = ?", [user?.user.sud]);
+  for (let x in LibraryCheck.rows) {
+      // @ts-ignore
+      //const await conn.execute("SELECT * FROM meal_history WHERE UserID = ?", [user?.user.sud]);
+  }
+
+  if (isdemo == "true" && loggedin == true) {
     return {
-      props: { params: {isdemo: true, details: demodetails}}
+      props: { params: {isdemo: true, details: demodetails, loggedin, user:user?.user}}
+    }
+  } if (loggedin == true) {
+    return {
+      props: { params: {isdemo: false, details: demodetails, loggedin, user:user?.user}}
     }
   } else {
     return {
-      props: { params: {isdemo: false, details: demodetails}}
-    }
+      redirect: {
+          permanent: false,
+          destination: "/",
+      }
+  }
   }
 }
 
 const Library = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const auth = useUser();
-  let loggedin = false;
-  if (auth.user){
-    loggedin = true;
-  }
-  if (params.isdemo == true) {
-    loggedin = true;
-    auth.user = params.details;
-  }
 
   return (
     <>
-      <Navbar loggedin={loggedin} authuser={auth.user} />
+      <Navbar loggedin={params.loggedin} authuser={params.user} />
       <div className="min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         <main className="flex flex-col items-center justify-center">
             <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">

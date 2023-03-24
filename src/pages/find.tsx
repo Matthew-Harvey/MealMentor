@@ -16,17 +16,37 @@ import { useState } from "react";
 import { demodetails } from "~/functions/demo";
 import Navbar from "~/components/Navbar";
 import MealSearchResult from "~/components/MealSearchResult";
+import { getSession } from "@auth0/nextjs-auth0";
 
-export function getServerSideProps(context : GetServerSidePropsContext) {
+export async function getServerSideProps(context : GetServerSidePropsContext) {
   const isdemo = context.query.demo;
+  
+  let user = await getSession(context.req, context.res);
+  let loggedin = false;
+  if (user?.user){
+      loggedin = true;
+  }
   if (isdemo == "true") {
+      loggedin = true;
+      // @ts-ignore
+      user = {};user.user = demodetails;
+  }
+
+  if (isdemo == "true" && loggedin == true) {
     return {
-      props: { params: {isdemo: true, details: demodetails}}
+      props: { params: {isdemo: true, details: demodetails, loggedin, user:user?.user}}
+    }
+  } if (loggedin == true) {
+    return {
+      props: { params: {isdemo: false, details: demodetails, loggedin, user:user?.user}}
     }
   } else {
     return {
-      props: { params: {isdemo: false, details: demodetails}}
-    }
+      redirect: {
+          permanent: false,
+          destination: "/",
+      }
+  }
   }
 }
 
@@ -40,19 +60,9 @@ const Find = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>
   const [inputval, setInputVal] = useState("Pasta");
   const [hasEnter, setHasEnter] = useState(false);
   const [queryCount, setQuerycount] = useState(1);
-
-  const auth = useUser();
-  let loggedin = false;
-  if (auth.user){
-    loggedin = true;
-  }
-  if (params.isdemo == true) {
-    loggedin = true;
-    auth.user = params.details;
-  }
   
   async function QueryFind  () {
-    authInsert.mutate({ user: JSON.parse(JSON.stringify(auth.user)) });
+    authInsert.mutate({ user: JSON.parse(JSON.stringify(params.user)) });
     api_test.mutate({ text: inputval });
     setHasEnter(true);
     setQuerycount(queryCount);
@@ -71,14 +81,14 @@ const Find = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>
 
   return (
     <>
-      <Navbar loggedin={loggedin} authuser={auth.user} />
+      <Navbar loggedin={params.loggedin} authuser={params.user} />
       <div className="min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         <main className="flex flex-col items-center justify-center">
             <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
                 <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
                     <span className="text-[hsl(280,100%,70%)]">Find</span> a dish
                 </h1>
-                {loggedin ? 
+                {params.loggedin ? 
                     <>
                       <input value={inputval} onChange={(e) => setInputVal(e.target.value)} className="p-2 rounded-xl text-black text-md w-80" type="search" onKeyDown={handleKeyDown} disabled={api_test.isLoading || queryCount > 5}></input>
                       <div className="text-2xl text-white">
