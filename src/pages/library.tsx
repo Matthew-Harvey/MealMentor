@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/require-await */
@@ -15,6 +16,7 @@ import Navbar from "~/components/Navbar";
 import { connect } from "@planetscale/database";
 import { config } from "~/server/api/routers/db_actions";
 import { getSession } from "@auth0/nextjs-auth0";
+import MealSearchResult from "~/components/MealSearchResult";
 
 export async function getServerSideProps(context : GetServerSidePropsContext) {
 
@@ -38,7 +40,7 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
       // @ts-ignore
       const dish =  await conn.execute("SELECT * FROM meals WHERE MealID = ?", [LibraryCheck.rows[x].MealID]);
       // @ts-ignore
-      try{arr.push(dish.rows[0].MealName)}catch{}
+      try{arr.push(dish.rows[0])}catch{}
   }
 
   if (isdemo == "true" && loggedin == true) {
@@ -61,6 +63,13 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
 
 const Library = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
 
+  let isdemo = "";
+  try {
+        if (params.user?.sub == "google-oauth2|143087949221293105235") {
+        isdemo = "?demo=true"
+        }
+  } catch {}
+
   return (
     <>
       <Navbar loggedin={params.loggedin} authuser={params.user} />
@@ -70,12 +79,14 @@ const Library = ({ params }: InferGetServerSidePropsType<typeof getServerSidePro
                 <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
                     <span className="text-[hsl(280,100%,70%)]">Your </span>Library
                 </h1>
+                <div className="text-2xl text-white">
+                  {params.lib.map((meal: any) => 
+                    <>
+                      <MealSearchResult title={meal.MealName} id={meal.MealID} image={JSON.parse(meal.Response).image} restaurantChain={JSON.parse(meal.Response).restaurantChain} isdemo={isdemo} />
+                    </>
+                  )}
+                </div>
             </div>
-            {params.lib.map((meal: any) => 
-              <>
-                <p className="text-white py-2">{meal}</p>
-              </>
-            )}
         </main>
       </div>
     </>

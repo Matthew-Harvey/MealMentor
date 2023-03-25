@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-floating-promises */
@@ -93,11 +94,22 @@ const DishPage = ({ params }: InferGetServerSidePropsType<typeof getServerSidePr
                     <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
                         <span className="text-white">{params.name}</span>
                     </h1>
-                    {queryGPT.data ? 
-                        <p className="text-white">{queryGPT.data?.text_result}</p>
-                        :
-                        <p className="text-white">Generating instructions..</p>
-                    }
+                    <div className="grid grid-cols-3">
+                        {queryGPT.data ? 
+                            <>
+                                <div className="col-span-2 text-white">
+                                    <h2>Ingredients:</h2>
+                                    <p>{queryGPT.data?.text_result.split("Ingredients:")[1]?.toString().split("Instructions:")[0]?.toString().split(" - ").toString()}</p>
+                                    <br />
+                                    <h2>Instructions:</h2>
+                                    <p>{queryGPT.data?.text_result.split("Instructions:")[1]?.toString()}</p>
+                                </div>
+                            </>
+                            :
+                            <p className="text-white">Generating instructions and ingredients..</p>
+                        }
+                        <img src={dishdetails.image} alt="Dish Image" className="rounded-lg m-auto" />
+                    </div>
                     {params.loggedin ?
                         <>
                             {AddedLib ?
