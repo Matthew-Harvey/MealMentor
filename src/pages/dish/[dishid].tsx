@@ -94,21 +94,30 @@ const DishPage = ({ params }: InferGetServerSidePropsType<typeof getServerSidePr
                     <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
                         <span className="text-white">{params.name}</span>
                     </h1>
-                    <div className="grid grid-cols-3">
+                    <h2 className="font-semibold text-4xl mb-2 text-[hsl(280,100%,70%)]">From {dishdetails.restaurantChain}</h2>
+                    <div className="grid grid-cols-3 max-w-6xl">
                         {queryGPT.data ? 
                             <>
                                 <div className="col-span-2 text-white">
-                                    <h2>Ingredients:</h2>
+                                    <h2 className="bold underline text-lg mb-1">Ingredients:</h2>
                                     <p>{queryGPT.data?.text_result.split("Ingredients:")[1]?.toString().split("Instructions:")[0]?.toString().split(" - ").toString()}</p>
                                     <br />
-                                    <h2>Instructions:</h2>
+                                    <h2 className="bold underline text-lg mb-1">Instructions:</h2>
                                     <p>{queryGPT.data?.text_result.split("Instructions:")[1]?.toString()}</p>
                                 </div>
                             </>
                             :
-                            <p className="text-white">Generating instructions and ingredients..</p>
+                            <>
+                                <div className="col-span-2 text-white">
+                                    <h2 className="bold underline text-lg mb-1">Ingredients:</h2>
+                                    <p>Generating ingredients..</p>
+                                    <br />
+                                    <h2 className="bold underline text-lg mb-1">Instructions:</h2>
+                                    <p>Generating instructions..</p>
+                                </div>
+                            </>
                         }
-                        <img src={dishdetails.image} alt="Dish Image" className="rounded-lg m-auto" />
+                        <img src={dishdetails.image} alt="Dish Image" className="rounded-lg m-auto shadow-lg" />
                     </div>
                     {params.loggedin ?
                         <>
