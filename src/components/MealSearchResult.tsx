@@ -11,8 +11,8 @@ import router from "next/router";
 const MealSearchResult = ({id, title, image, restaurantChain, isdemo }: any) => {
   return (
     <>
-        <article key={id} className="rounded-xl border border-gray-700 bg-purple-800 p-4 m-4 hover:scale-105 ease-in-out transition">
-            <button className="flex items-center gap-4" onClick={() => router.push("/dish/" + id + isdemo)}>
+        <article key={id} className="rounded-xl max-w-lg cursor-pointer m-auto border bg-gradient-to-tr from-[#313131] to-[#DB6310] p-4 my-4 hover:scale-105 ease-in-out transition" onClick={() => router.push("/dish/" + id + isdemo)}>
+            <div className="flex items-center gap-4">
                 <img
                 alt="No Image"
                 src={image.toString()}
@@ -29,7 +29,7 @@ const MealSearchResult = ({id, title, image, restaurantChain, isdemo }: any) => 
                     </ul>
                 </div>
                 </div>
-            </button>
+            </div>
         </article>
     </>
   );

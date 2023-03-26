@@ -87,53 +87,51 @@ const DishPage = ({ params }: InferGetServerSidePropsType<typeof getServerSidePr
 
     return (
         <>
-        <Navbar loggedin={params.loggedin} authuser={params.user} dishid={params.dishid} />
-        <div className="min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-            <main className="flex flex-col items-center justify-center">
-                <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-                    <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-                        <span className="text-white">{params.name}</span>
-                    </h1>
-                    <h2 className="font-semibold text-4xl mb-2 text-[hsl(280,100%,70%)]">From {dishdetails.restaurantChain}</h2>
-                    <div className="grid grid-cols-3 max-w-6xl">
-                        {queryGPT.data ? 
-                            <>
-                                <div className="col-span-2 text-white">
-                                    <h2 className="bold underline text-lg mb-1">Ingredients:</h2>
-                                    <p>{queryGPT.data?.text_result.split("Ingredients:")[1]?.toString().split("Instructions:")[0]?.toString().split(" - ").toString()}</p>
-                                    <br />
-                                    <h2 className="bold underline text-lg mb-1">Instructions:</h2>
-                                    <p>{queryGPT.data?.text_result.split("Instructions:")[1]?.toString()}</p>
-                                </div>
-                            </>
-                            :
-                            <>
-                                <div className="col-span-2 text-white">
-                                    <h2 className="bold underline text-lg mb-1">Ingredients:</h2>
-                                    <p>Generating ingredients..</p>
-                                    <br />
-                                    <h2 className="bold underline text-lg mb-1">Instructions:</h2>
-                                    <p>Generating instructions..</p>
-                                </div>
-                            </>
-                        }
-                        <img src={dishdetails.image} alt="Dish Image" className="rounded-lg m-auto shadow-lg" />
-                    </div>
-                    {params.loggedin ?
+        <main className="flex min-h-screen flex-col bg-gradient-to-tr from-[#313131] to-[#000000]">
+            <Navbar loggedin={params.loggedin} authuser={params.user} />
+            <div className="container items-center gap-10 px-4 py-10 justify-center max-w-6xl m-auto">
+                <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
+                    <span className="text-white">{params.name}</span>
+                </h1>
+                <h2 className="font-semibold text-4xl mt-4 mb-10 text-[#DB6310]">From {dishdetails.restaurantChain}</h2>
+                <div className="grid grid-cols-3 max-w-6xl">
+                    {queryGPT.data ? 
                         <>
-                            {AddedLib ?
-                                <button onClick={RemoveFromLibrary} className="p-3 bg-red-400 text-white transition hover:scale-105 rounded-lg">Remove from library</button>
-                                :
-                                <button onClick={AddToLibrary} className="p-3 bg-green-400 text-white transition hover:scale-105 rounded-lg">Add to library</button>
-                            }
+                            <div className="col-span-2 text-white">
+                                <h2 className="bold underline text-lg mb-1">Ingredients:</h2>
+                                <p>{queryGPT.data?.text_result.split("Ingredients:")[1]?.toString().split("Instructions:")[0]?.toString().split(" - ").toString()}</p>
+                                <br />
+                                <h2 className="bold underline text-lg mb-1">Instructions:</h2>
+                                <p>{queryGPT.data?.text_result.split("Instructions:")[1]?.toString()}</p>
+                            </div>
                         </>
-                    :
+                        :
                         <>
+                            <div className="col-span-2 text-white">
+                                <h2 className="bold underline text-lg mb-1">Ingredients:</h2>
+                                <p>Generating ingredients..</p>
+                                <br />
+                                <h2 className="bold underline text-lg mb-1">Instructions:</h2>
+                                <p>Generating instructions..</p>
+                            </div>
                         </>
                     }
+                    <img src={dishdetails.image} alt="Dish Image" className="rounded-lg m-auto shadow-lg" />
                 </div>
-            </main>
-        </div>
+                {params.loggedin ?
+                    <>
+                        {AddedLib ?
+                            <button onClick={RemoveFromLibrary} className="p-3 bg-red-400 text-white transition hover:scale-105 rounded-lg mt-10">Remove from library</button>
+                            :
+                            <button onClick={AddToLibrary} className="p-3 bg-green-400 text-white transition hover:scale-105 rounded-lg mt-10">Add to library</button>
+                        }
+                    </>
+                :
+                    <>
+                    </>
+                }
+            </div>
+        </main>
         </>
     );
 };

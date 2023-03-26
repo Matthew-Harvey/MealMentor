@@ -54,28 +54,28 @@ const Home = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>
         <Navbar loggedin={loggedin} authuser={auth.user} />
         <div className="container items-center gap-10 px-4 py-10 justify-center max-w-6xl m-auto">
             <div className="grid grid-cols-5">
-              <div className="col-span-3">
-                <h1 className="text-3xl md:text-8xl font-extrabold tracking-tight text-white sm:text-[5rem] col">
+              <div className="col-span-5 md:col-span-3">
+                <h1 className="text-5xl lg:text-8xl font-extrabold tracking-tight text-white sm:text-[5rem] col">
                 Find Your <span className="text-[#DB6310]">Dream Food</span> With Us
                 </h1>
                 {loggedin ? 
                   <>
-                    <p className="text-2xl text-white mt-10">
+                    <p className="text-2xl text-white my-10">
                         Please start looking for dishes by selecting below:
                     </p>
                   </>
                   :
                   <>
-                    <p className="text-2xl text-white mt-10">
+                    <p className="text-2xl text-white my-10">
                         Please log in to find your next dish!
                     </p>
                   </>
                 }
             </div>
-            <div style={{backgroundImage: "url(/noah-buscher-8A7fD6Y5VF8-unsplash.jpg)"}} className="relative rounded-3xl w-full h-96 col-span-2 bg-cover bg-no-repeat min-h-full z-0">
+            <div style={{backgroundImage: "url(/noah-buscher-8A7fD6Y5VF8-unsplash.jpg)"}} className="relative rounded-3xl w-full h-96 col-span-5 md:col-span-2 bg-cover bg-no-repeat min-h-full z-0">
                 <img src={"/ric-matkowski-T8SD7bwyxHU-unsplash-removebg-preview.png"} alt="Burger ingredients" className="
-                  relative bottom-0 left-0 rounded-3xl w-auto h-96 z-10 overflow-visible rotate-45 lg:mb-32 lg:-mt-32 lg:mr-32 lg:-ml-32 md:mb-28 md:-mt-28 md:mr-28 md:-ml-28
-                  sm:mb-20 sm:-mt-20 sm:mr-12 sm:-ml-12 mb-8 -mt-8 mr-8 -ml-8
+                  relative bottom-0 left-0 rounded-3xl w-auto h-72 md:h-96 z-10 overflow-visible rotate-45 lg:mb-32 lg:-mt-32 lg:mr-32 lg:-ml-32 md:mb-28 md:-mt-28 md:mr-28 md:-ml-28
+                  sm:mb-40 sm:-mt-0 sm:mr-40 sm:-ml-12 mb-10 -mt-12 mr-10 -ml-10
                 " />
             </div>
           </div>

@@ -72,23 +72,21 @@ const Library = ({ params }: InferGetServerSidePropsType<typeof getServerSidePro
 
   return (
     <>
-      <Navbar loggedin={params.loggedin} authuser={params.user} />
-      <div className="min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        <main className="flex flex-col items-center justify-center">
-            <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-                <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-                    <span className="text-[hsl(280,100%,70%)]">Your </span>Library
-                </h1>
-                <div className="text-2xl text-white">
-                  {params.lib.map((meal: any) => 
-                    <>
-                      <MealSearchResult title={meal.MealName} id={meal.MealID} image={JSON.parse(meal.Response).image} restaurantChain={JSON.parse(meal.Response).restaurantChain} isdemo={isdemo} />
-                    </>
-                  )}
-                </div>
+      <main className="flex min-h-screen flex-col bg-gradient-to-tr from-[#313131] to-[#000000]">
+        <Navbar loggedin={params.loggedin} authuser={params.user} />
+        <div className="container items-center gap-10 px-4 py-10 justify-center max-w-6xl m-auto grid grid-cols-1">
+            <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem] text-center">
+                <span className="text-[#DB6310]">Your </span>Library
+            </h1>
+            <div className="text-2xl text-white">
+              {params.lib.map((meal: any) => 
+                <>
+                  <MealSearchResult title={meal.MealName} id={meal.MealID} image={JSON.parse(meal.Response).image} restaurantChain={JSON.parse(meal.Response).restaurantChain} isdemo={isdemo} />
+                </>
+              )}
             </div>
-        </main>
-      </div>
+        </div>
+      </main>
     </>
   );
 };
