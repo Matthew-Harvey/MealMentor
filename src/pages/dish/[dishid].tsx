@@ -19,6 +19,7 @@ import { connect } from "@planetscale/database";
 import { config } from "~/server/api/routers/db_actions";
 import { useState } from "react";
 import { getSession } from "@auth0/nextjs-auth0";
+import { getSearchResults } from "~/functions/getalldish";
 
 export async function getServerSideProps(context : GetServerSidePropsContext) {
     const isdemo = context.query.demo;
@@ -38,6 +39,8 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
         user = {};user.user = demodetails;
     }
 
+    const items = await getSearchResults();
+    
     if (getDetails.size > 0) {
         const conn = connect(config);
         const LibraryCheck = await conn.execute("SELECT * FROM meal_history WHERE MealID = ? AND UserID = ?", [dishid, user?.user.sub]);
@@ -48,12 +51,12 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
         if (isdemo == "true") {
             return {
                 // @ts-ignore
-                props: { params: {isdemo: true, details: demodetails, dishid, name: getDetails.rows[0].MealName, dishdetails: getDetails.rows[0].Response, loggedin, user:user.user, islibrary:islibrary}}
+                props: { params: {isdemo: true, details: demodetails, dishid, name: getDetails.rows[0].MealName, dishdetails: getDetails.rows[0].Response, loggedin, user:user.user, islibrary:islibrary, items}}
             }
         } else {
             return {
                 // @ts-ignore
-                props: { params: {isdemo: false, details: demodetails, dishid, name: getDetails.rows[0].MealName, dishdetails: getDetails.rows[0].Response, loggedin, user:user.user, islibrary:islibrary}}
+                props: { params: {isdemo: false, details: demodetails, dishid, name: getDetails.rows[0].MealName, dishdetails: getDetails.rows[0].Response, loggedin, user:user.user, islibrary:islibrary, items}}
             }
         }
     } else {
@@ -88,7 +91,7 @@ const DishPage = ({ params }: InferGetServerSidePropsType<typeof getServerSidePr
     return (
         <>
         <main className="flex min-h-screen flex-col bg-gradient-to-tr from-[#313131] to-[#000000]">
-            <Navbar loggedin={params.loggedin} authuser={params.user} />
+            <Navbar loggedin={params.loggedin} authuser={params.user} items={JSON.parse(params.items)} />
             <div className="container items-center gap-10 px-4 py-10 justify-center max-w-6xl m-auto">
                 <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
                     <span className="text-white">{params.name}</span>

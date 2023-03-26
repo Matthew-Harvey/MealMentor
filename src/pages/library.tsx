@@ -17,6 +17,7 @@ import { connect } from "@planetscale/database";
 import { config } from "~/server/api/routers/db_actions";
 import { getSession } from "@auth0/nextjs-auth0";
 import MealSearchResult from "~/components/MealSearchResult";
+import { getSearchResults } from "~/functions/getalldish";
 
 export async function getServerSideProps(context : GetServerSidePropsContext) {
 
@@ -33,6 +34,8 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
       user = {};user.user = demodetails;
   }
 
+  const items = await getSearchResults();
+
   const conn = connect(config);
   const LibraryCheck = await conn.execute("SELECT * FROM meal_history WHERE UserID = ?", [user?.user.sub]);
   const arr = [];
@@ -45,11 +48,11 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
 
   if (isdemo == "true" && loggedin == true) {
     return {
-      props: { params: {isdemo: true, details: demodetails, loggedin, user:user?.user, lib: arr}}
+      props: { params: {isdemo: true, details: demodetails, loggedin, user:user?.user, lib: arr, items}}
     }
   } if (loggedin == true) {
     return {
-      props: { params: {isdemo: false, details: demodetails, loggedin, user:user?.user, lib: arr}}
+      props: { params: {isdemo: false, details: demodetails, loggedin, user:user?.user, lib: arr, items}}
     }
   } else {
     return {
@@ -73,7 +76,7 @@ const Library = ({ params }: InferGetServerSidePropsType<typeof getServerSidePro
   return (
     <>
       <main className="flex min-h-screen flex-col bg-gradient-to-tr from-[#313131] to-[#000000]">
-        <Navbar loggedin={params.loggedin} authuser={params.user} />
+        <Navbar loggedin={params.loggedin} authuser={params.user} items={JSON.parse(params.items)} />
         <div className="container items-center gap-10 px-4 py-10 justify-center max-w-6xl m-auto grid grid-cols-1">
             <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem] text-center">
                 <span className="text-[#DB6310]">Your </span>Library

@@ -16,6 +16,7 @@ import { demodetails } from "~/functions/demo";
 import Navbar from "~/components/Navbar";
 import MealSearchResult from "~/components/MealSearchResult";
 import { getSession } from "@auth0/nextjs-auth0";
+import { getSearchResults } from "~/functions/getalldish";
 
 export async function getServerSideProps(context : GetServerSidePropsContext) {
   const isdemo = context.query.demo;
@@ -30,14 +31,16 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
       // @ts-ignore
       user = {};user.user = demodetails;
   }
+  
+  const items = await getSearchResults();
 
   if (isdemo == "true" && loggedin == true) {
     return {
-      props: { params: {isdemo: true, details: demodetails, loggedin, user:user?.user}}
+      props: { params: {isdemo: true, details: demodetails, loggedin, user:user?.user, items}}
     }
   } if (loggedin == true) {
     return {
-      props: { params: {isdemo: false, details: demodetails, loggedin, user:user?.user}}
+      props: { params: {isdemo: false, details: demodetails, loggedin, user:user?.user, items}}
     }
   } else {
     return {
@@ -88,7 +91,7 @@ const Find = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>
   return (
     <>
       <main className="flex min-h-screen flex-col bg-gradient-to-tr from-[#313131] to-[#000000]">
-        <Navbar loggedin={params.loggedin} authuser={params.user} />
+        <Navbar loggedin={params.loggedin} authuser={params.user} items={JSON.parse(params.items)} />
         <div className="container items-center gap-10 px-4 py-10 justify-center max-w-6xl m-auto grid grid-cols-1">
           <h1 className="text-5xl lg:text-8xl font-extrabold tracking-tight text-white sm:text-[5rem] text-center m-auto">
             <span className="text-[#DB6310]">Find</span> a dish

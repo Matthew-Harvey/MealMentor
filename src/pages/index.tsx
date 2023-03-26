@@ -15,16 +15,20 @@ import Link from "next/link";
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { demodetails, demologin } from "~/functions/demo";
 import Navbar from "~/components/Navbar";
+import { getSearchResults } from "~/functions/getalldish";
 
-export function getServerSideProps(context : GetServerSidePropsContext) {
+export async function getServerSideProps(context : GetServerSidePropsContext) {
+
+  const items = await getSearchResults();
+
   const isdemo = context.query.demo;
   if (isdemo == "true") {
     return {
-      props: { params: {isdemo: true, details: demodetails}}
+      props: { params: {isdemo: true, details: demodetails, items}}
     }
   } else {
     return {
-      props: { params: {isdemo: false, details: demodetails}}
+      props: { params: {isdemo: false, details: demodetails, items}}
     }
   }
 }
@@ -51,7 +55,7 @@ const Home = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>
   return (
     <>
       <main className="flex min-h-screen flex-col bg-gradient-to-tr from-[#313131] to-[#000000]">
-        <Navbar loggedin={loggedin} authuser={auth.user} />
+        <Navbar loggedin={loggedin} authuser={auth.user} items={JSON.parse(params.items)} />
         <div className="container items-center gap-10 px-4 py-10 justify-center max-w-6xl m-auto">
             <div className="grid grid-cols-5">
               <div className="col-span-5 md:col-span-3">

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/restrict-plus-operands */
+/* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
@@ -5,20 +7,49 @@ import Link from "next/link";
 import { useState } from "react";
 import Image from "next/image";
 import { demologin } from "~/functions/demo";
+import { ReactSearchAutocomplete } from "react-search-autocomplete";
+import router from "next/router";
 
+const Navbar = ({loggedin, authuser, items} : any) => {
 
-const Navbar = ({loggedin, authuser} : any) => {
+    const [navbar, setNavbar] = useState(false);
 
-  const [navbar, setNavbar] = useState(false);
-
-  let isdemo = "";
-  try {
+    let isdemo = "";
+    try {
         if (authuser.sub == "google-oauth2|143087949221293105235") {
-        isdemo = "?demo=true"
+            isdemo = "?demo=true"
         }
     } catch {}
+    
+    const handleOnSearch = (string:any, results:any) => {
+        // onSearch will have as the first callback parameter
+        // the string searched and for the second the results.
+        console.log(string, results, "ENTER PRESSED")
+    }
+    
+    const handleOnHover = (result:any) => {
+        // the item hovered
+        console.log(result)
+    }
+    
+    const handleOnSelect = (item:any) => {
+        // the item selected
+        router.push("/dish/" + item.id + isdemo);
+    }
+    
+    const handleOnFocus = () => {
+        console.log('Focused')
+    }
+    
+    const formatResult = (item:any) => {
+        return (
+          <>
+            <span style={{ display: 'block', textAlign: 'left' }}>{item.name}</span>
+          </>
+        )
+    }
 
-  return (
+    return (
         <nav className="w-full bg-transparent bg-opacity-50 sticky top-0 backdrop-blur-lg z-10 flex-shrink-1 border-b-stone-500 border-b border-opacity-40 will-change-scroll">
             <div className="justify-between px-4 mx-auto lg:max-w-6xl md:items-center md:flex md:px-8">
                 <div>
@@ -69,6 +100,18 @@ const Navbar = ({loggedin, authuser} : any) => {
                         }`}
                     >
                         <ul className="items-center justify-center space-y-8 md:flex md:space-x-6 md:space-y-0">
+                            <div className="w-60">
+                                <ReactSearchAutocomplete
+                                    items={items}
+                                    onSearch={handleOnSearch}
+                                    onHover={handleOnHover}
+                                    onSelect={handleOnSelect}
+                                    onFocus={handleOnFocus}
+                                    autoFocus
+                                    formatResult={formatResult}
+                                    placeholder="Search"
+                                />
+                            </div>
                             {loggedin && 
                                 <Link className="text-white text-xl hover:text-[#DB6310]" href={"/find" + isdemo}>
                                     <p className="py-4 md:py-0">Find</p>
