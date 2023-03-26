@@ -19,11 +19,11 @@ const Navbar = ({loggedin, authuser} : any) => {
     } catch {}
 
   return (
-        <nav className="w-full bg-white shadow sticky top-0 z-10 flex-shrink-1">
+        <nav className="w-full bg-transparent bg-opacity-50 sticky top-0 backdrop-blur-lg z-10 flex-shrink-1 border-b-stone-500 border-b border-opacity-40 will-change-scroll">
             <div className="justify-between px-4 mx-auto lg:max-w-6xl md:items-center md:flex md:px-8">
                 <div>
                     <div className="flex items-center justify-between py-3 md:py-5 md:block">
-                        <Link href={"/" + isdemo}><h2 className="text-3xl font-bold"><span className="text-[hsl(280,100%,70%)]">Meal</span>Mentor</h2></Link>
+                        <Link href={"/" + isdemo}><h2 className="text-4xl font-bold text-white"><span className="text-[#DB6310]">MEAL</span>MENTOR</h2></Link>
                         <div className="md:hidden">
                             <button
                                 className="p-2 text-gray-700 rounded-md outline-none focus:border-gray-400 focus:border"
@@ -70,24 +70,24 @@ const Navbar = ({loggedin, authuser} : any) => {
                     >
                         <ul className="items-center justify-center space-y-8 md:flex md:space-x-6 md:space-y-0">
                             {loggedin && 
-                                <Link className="text-gray-600 text-lg hover:text-purple-600" href={"/find" + isdemo}>
+                                <Link className="text-white text-xl hover:text-[#DB6310]" href={"/find" + isdemo}>
                                     <p className="py-4 md:py-0">Find</p>
                                 </Link>
                             }
                             {loggedin && 
-                                <Link className="text-gray-600 text-lg hover:text-purple-600" href={"/library" + isdemo}>
+                                <Link className="text-white text-xl hover:text-[#DB6310]" href={"/library" + isdemo}>
                                     <p className="py-4 md:py-0">Library</p>
                                 </Link>
                             }
-                            {loggedin ? <Link href="/api/auth/logout" className="text-gray-600 hover:text-purple-600 text-lg"><p className="py-4 md:py-0">Logout</p></Link> : <Link href="/api/auth/login" className="text-gray-600 hover:text-purple-600 text-lg"><p className="py-4 md:py-0">Sign In</p></Link>}
+                            {loggedin ? <Link href="/api/auth/logout" className="text-white hover:text-[#DB6310] text-xl"><p className="py-4 md:py-0">Logout</p></Link> : <Link href="/api/auth/login" className="text-white hover:text-[#DB6310] text-xl"><p className="py-4 md:py-0">Sign In</p></Link>}
                             {loggedin && 
                                 <>
-                                    <Link className="text-gray-600 text-lg" href={"/profile" + isdemo}>
-                                        <Image width="200" height="200" src={authuser?.picture} alt="pfp" className="rounded-full w-8 h-8" referrerPolicy="no-referrer" />
+                                    <Link className="bg-transparent" href={"/profile" + isdemo}>
+                                        <Image width="200" height="200" src={authuser?.picture} alt="pfp" className="rounded-full w-8 h-8 ring-1 ring-gray-400 ring-opacity-40 ring-offset-gray-800 ring-offset-2" referrerPolicy="no-referrer" />
                                     </Link>
                                 </>
                             }
-                            <p className="text-gray-600 hover:text-purple-600 text-lg">
+                            <p className="text-white hover:text-[#DB6310] text-xl">
                               {loggedin == false && <button onClick={demologin}>Demo</button>}
                             </p>
                         </ul>
