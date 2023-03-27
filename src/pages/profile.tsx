@@ -64,7 +64,7 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
   }
 }
 
-const Library = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const Profile = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
 
   let isdemo = "";
   try {
@@ -96,4 +96,4 @@ const Library = ({ params }: InferGetServerSidePropsType<typeof getServerSidePro
   );
 };
 
-export default Library;
+export default Profile;

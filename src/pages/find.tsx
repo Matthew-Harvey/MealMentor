@@ -103,13 +103,15 @@ const Find = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>
                   <>
                     {api_test.isLoading == true && "Loading response..."}
                     {hasEnter == false && "Please Type a question above"}
-                    {api_test.data ? 
-                      display_result.map((meal: any) => 
-                          <>
-                              <MealSearchResult title={meal.title} id={meal.id} image={meal.image} restaurantChain={meal.restaurantChain} isdemo={isdemo} />
-                          </>
-                        )
-                    : ""}
+                    <div className="grid grid-cols-2 max-w-4xl px-2 gap-0 m-auto">
+                      {api_test.data ? 
+                        display_result.map((meal: any) => 
+                            <>
+                                <MealSearchResult title={meal.title} id={meal.id} image={meal.image} restaurantChain={meal.restaurantChain} isdemo={isdemo} />
+                            </>
+                          )
+                      : ""}
+                    </div>
                   </>
                 </div>
               </>

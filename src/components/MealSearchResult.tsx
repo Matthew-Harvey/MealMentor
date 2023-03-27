@@ -11,20 +11,20 @@ import router from "next/router";
 const MealSearchResult = ({id, title, image, restaurantChain, isdemo }: any) => {
   return (
     <>
-        <article key={id} className="rounded-xl max-w-lg cursor-pointer m-auto border bg-gradient-to-tr from-[#313131] to-[#DB6310] p-4 my-4 hover:scale-105 ease-in-out transition" onClick={() => router.push("/dish/" + id + isdemo)}>
-            <div className="flex items-center gap-4">
+        <article key={id} className="rounded-xl m-auto w-96 cursor-pointer shadow bg-[#313131] p-2 my-4 hover:scale-105 ease-in-out transition" onClick={() => router.push("/dish/" + id + isdemo)}>
+            <div className="flex items-center gap-2 text-left">
                 <img
-                alt="No Image"
-                src={image.toString()}
-                className="h-24 w-24 rounded-full object-cover"
+                    alt="No Image"
+                    src={image.toString()}
+                    className="h-32 w-32 rounded-full object-cover"
                 />
                 <div>
-                <h3 className="text-lg font-medium text-white">{title}</h3>
+                <h3 className="text-2xl font-medium text-white">{title}</h3>
 
                 <div className="flow-root">
                     <ul className="-m-1 flex flex-wrap">
                         <li className="p-1 leading-none">
-                            <p className="text-xs font-medium text-gray-300">{restaurantChain}</p>
+                            <p className="text-lg font-medium text-gray-300 italic">From {restaurantChain}</p>
                         </li>
                     </ul>
                 </div>
