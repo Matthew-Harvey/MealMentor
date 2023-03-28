@@ -72,7 +72,7 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
 const DishPage = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
     const dishdetails = JSON.parse(params.dishdetails);
     const authInsert = api.db.InsertUser.useMutation();
-    const queryGPT = api.example.HowToMakeDishGPT.useQuery({text: "Please give some instructs to make " + params.name + " from " + dishdetails.restaurantChain, id: params.dishid});
+    const queryGPT = api.example.HowToMakeDishGPT.useQuery({text: "Please give some instructions to make " + params.name + " from " + dishdetails.restaurantChain, id: params.dishid, type: "instruct"});
 
     // @ts-ignore
     const AddLibrary = api.example.addDishLibrary.useMutation({dishid: params.dishid, userid: params.user.sub});const RemoveLibrary = api.example.removeDishLibrary.useMutation({dishid: params.dishid, userid: params.user.sub});
@@ -105,10 +105,10 @@ const DishPage = ({ params }: InferGetServerSidePropsType<typeof getServerSidePr
                         <>
                             <div className="col-span-2 text-white">
                                 <h2 className="bold underline text-lg mb-1">Ingredients:</h2>
-                                <p>{queryGPT.data?.text_result.split("Ingredients:")[1]?.toString().split("Instructions:")[0]?.toString().split(" - ").toString()}</p>
+                                <p>{queryGPT.data?.ingred}</p>
                                 <br />
                                 <h2 className="bold underline text-lg mb-1">Instructions:</h2>
-                                <p>{queryGPT.data?.text_result.split("Instructions:")[1]?.toString()}</p>
+                                <p>{queryGPT.data?.instruct}</p>
                             </div>
                         </>
                         :

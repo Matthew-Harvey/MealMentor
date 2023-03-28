@@ -54,29 +54,36 @@ export const exampleRouter = createTRPCRouter({
     }),
 
   HowToMakeDishGPT: publicProcedure
-    .input(z.object({ text: z.string(), id: z.any() }))
+    .input(z.object({ text: z.string(), id: z.any(), type: z.string() }))
     .query(async ({ input }) => {
-
+      
       const conn = connect(config);
-      const HowToMakeCheck = await conn.execute("SELECT HowToMake FROM meals WHERE MealID = ?", [input.id]);
+      const HowToMakeCheck = await conn.execute("SELECT Instructions, Ingredients FROM meals WHERE MealID = ?", [input.id]);
       // @ts-ignore
-      if (HowToMakeCheck.rows[0].HowToMake != null) {
+      if (HowToMakeCheck.rows[0].Instructions != null) {
         return {
           // @ts-ignore
-          text_result: HowToMakeCheck.rows[0].HowToMake.toString()
+          instruct: HowToMakeCheck.rows[0].Instructions.toString(),
+          // @ts-ignore
+          ingred: HowToMakeCheck.rows[0].Ingredients.toString()
         };
       } else {
         const openai = new OpenAIApi(configuration);
         const messages = [];
         messages.push({ role: "user", content: input.text });
+
         // @ts-ignore
         const completion = await openai.createChatCompletion({model: "gpt-3.5-turbo", messages: messages});
         const text = completion.data.choices[0]?.message;
-        await conn.execute("UPDATE meals SET HowToMake = ? WHERE MealID = ?", 
-          [text?.content, input.id]
+
+        await conn.execute("UPDATE meals SET Instructions = ?, Ingredients = ? WHERE MealID = ?", 
+            [text?.content.split("Instructions:")[1]?.toString(), text?.content.split("Ingredients:")[1]?.toString().split("Instructions:")[0]?.toString().split(" - ").toString(), input.id]
         )
+
         return {
-          text_result: text?.content,
+          instruct: text?.content.split("Instructions:")[1]?.toString(),
+          // @ts-ignore
+          ingred: text?.content.split("Ingredients:")[1]?.toString().split("Instructions:")[0]?.toString().split(" - ").toString()
         };
       }
     }),
