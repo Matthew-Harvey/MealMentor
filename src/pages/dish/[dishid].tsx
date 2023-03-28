@@ -55,6 +55,7 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
         const getResult = await axios.get(process.env.AUTH0_BASE_URL?.toString() + "/api/GetInstructIngred", {params: {id: dishid, message: "Please give instructions to make " + getDetails.rows[0].MealName + " from " + JSON.parse(JSON.stringify(getDetails.rows[0].Response)).restaurantChain}});
         ingred = getResult.data.ingred;
         instruct = getResult.data.instruct;
+        const updateDB = await axios.get(process.env.AUTH0_BASE_URL?.toString() + "/api/UpdateInstruct", {params: {id: dishid, instruct:instruct, ingred:ingred}});
     }
 
     const items = await getSearchResults();
