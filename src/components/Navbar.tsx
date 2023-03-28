@@ -100,18 +100,20 @@ const Navbar = ({loggedin, authuser, items} : any) => {
                         }`}
                     >
                         <ul className="items-center justify-center space-y-8 md:flex md:space-x-6 md:space-y-0">
-                            <div className="w-60">
-                                <ReactSearchAutocomplete
-                                    items={items}
-                                    onSearch={handleOnSearch}
-                                    onHover={handleOnHover}
-                                    onSelect={handleOnSelect}
-                                    onFocus={handleOnFocus}
-                                    autoFocus
-                                    formatResult={formatResult}
-                                    placeholder="Search"
-                                />
-                            </div>
+                            {loggedin && 
+                                <div className="w-60">
+                                    <ReactSearchAutocomplete
+                                        items={items}
+                                        onSearch={handleOnSearch}
+                                        onHover={handleOnHover}
+                                        onSelect={handleOnSelect}
+                                        onFocus={handleOnFocus}
+                                        autoFocus
+                                        formatResult={formatResult}
+                                        placeholder="Search"
+                                    />
+                                </div>
+                            }
                             {loggedin && 
                                 <Link className="text-white text-xl hover:text-[#DB6310]" href={"/find" + isdemo}>
                                     <p className="py-4 md:py-0">Find</p>

@@ -71,6 +71,7 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
 
 const DishPage = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
     const dishdetails = JSON.parse(params.dishdetails);
+    const authInsert = api.db.InsertUser.useMutation();
     const queryGPT = api.example.HowToMakeDishGPT.useQuery({text: "Please give some instructs to make " + params.name + " from " + dishdetails.restaurantChain, id: params.dishid});
 
     // @ts-ignore
@@ -78,11 +79,13 @@ const DishPage = ({ params }: InferGetServerSidePropsType<typeof getServerSidePr
     const [AddedLib, SetAddedLib] = useState(params.islibrary);
 
     function AddToLibrary(){
+        authInsert.mutate({ user: JSON.parse(JSON.stringify(params.user)) });
         // @ts-ignore
         AddLibrary.mutate({dishid: params.dishid, userid: params.user.sub});
         SetAddedLib(true);
     }
     function RemoveFromLibrary(){
+        authInsert.mutate({ user: JSON.parse(JSON.stringify(params.user)) });
         // @ts-ignore
         RemoveLibrary.mutate({dishid: params.dishid, userid: params.user.sub});
         SetAddedLib(false);

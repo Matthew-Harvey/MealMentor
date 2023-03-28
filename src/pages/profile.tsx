@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-floating-promises */
@@ -16,7 +17,6 @@ import Navbar from "~/components/Navbar";
 import { connect } from "@planetscale/database";
 import { config } from "~/server/api/routers/db_actions";
 import { getSession } from "@auth0/nextjs-auth0";
-import MealSearchResult from "~/components/MealSearchResult";
 import { getSearchResults } from "~/functions/getalldish";
 
 export async function getServerSideProps(context : GetServerSidePropsContext) {
@@ -37,22 +37,17 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
   const items = await getSearchResults();
 
   const conn = connect(config);
-  const LibraryCheck = await conn.execute("SELECT * FROM meal_history WHERE UserID = ?", [user?.user.sub]);
-  const arr = [];
-  for (const x in LibraryCheck.rows) {
-      // @ts-ignore
-      const dish =  await conn.execute("SELECT * FROM meals WHERE MealID = ?", [LibraryCheck.rows[x].MealID]);
-      // @ts-ignore
-      try{arr.push(dish.rows[0])}catch{}
-  }
+  const GetUpdated = await conn.execute("SELECT updated FROM users WHERE UserID = ?", [user?.user.sub]);
+  // @ts-ignore
+  const updated = GetUpdated.rows[0].updated.toString();
 
   if (isdemo == "true" && loggedin == true) {
     return {
-      props: { params: {isdemo: true, details: demodetails, loggedin, user:user?.user, lib: arr, items}}
+      props: { params: {isdemo: true, details: demodetails, loggedin, user:user?.user, items, updated}}
     }
   } if (loggedin == true) {
     return {
-      props: { params: {isdemo: false, details: demodetails, loggedin, user:user?.user, lib: arr, items}}
+      props: { params: {isdemo: false, details: demodetails, loggedin, user:user?.user, items, updated}}
     }
   } else {
     return {
@@ -77,19 +72,13 @@ const Profile = ({ params }: InferGetServerSidePropsType<typeof getServerSidePro
     <>
       <main className="flex min-h-screen flex-col bg-gradient-to-tr from-[#313131] to-[#000000]">
         <Navbar loggedin={params.loggedin} authuser={params.user} items={JSON.parse(params.items)} />
-        <div className="container items-center gap-10 px-4 py-10 justify-center max-w-6xl m-auto grid grid-cols-1">
+        <div className="container items-center gap-10 px-4 py-10 justify-center max-w-6xl m-auto grid grid-cols-1 text-white text-center text-xl">
             <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem] text-center">
-                <span className="text-[#DB6310]">Your </span>Library
+                <span className="text-[#DB6310]">Your </span>Account
             </h1>
-            <div className="text-2xl text-white">
-              <div className="grid grid-cols-2 max-w-4xl px-2 gap-0 m-auto">
-                {params.lib.map((meal: any) => 
-                  <>
-                    <MealSearchResult title={meal.MealName} id={meal.MealID} image={JSON.parse(meal.Response).image} restaurantChain={JSON.parse(meal.Response).restaurantChain} isdemo={isdemo} />
-                  </>
-                )}
-              </div>
-            </div>
+            <p>Name - {params.user?.name}</p>
+            <p>Email - {params.user?.email}</p>
+            <p>Created - {new Date(params.updated.toString()).toDateString()}</p>
         </div>
       </main>
     </>
