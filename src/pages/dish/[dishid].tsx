@@ -52,9 +52,11 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
         ingred = HowToMakeCheck.rows[0].Ingredients.toString()
     } else {
         // @ts-ignore
-        const getResult = await axios.get(process.env.AUTH0_BASE_URL?.toString() + "/api/GetInstructIngred", {params: {id: dishid, message: "Please give instructions to make " + getDetails.rows[0].MealName + " from " + JSON.parse(JSON.stringify(getDetails.rows[0].Response)).restaurantChain}});
-        ingred = getResult.data.ingred;
-        instruct = getResult.data.instruct;
+        const getResult = await axios.get(process.env.AUTH0_BASE_URL?.toString() + "/api/GetInstructIngred", {params: {id: dishid, message: "Please give som basic instructions to make " + getDetails.rows[0].MealName + " from " + JSON.parse(JSON.stringify(getDetails.rows[0].Response)).restaurantChain}});
+        instruct = getResult.data.result;
+        // @ts-ignore
+        const getResult2 = await axios.get(process.env.AUTH0_BASE_URL?.toString() + "/api/GetInstructIngred", {params: {id: dishid, message: "Please give som basic ingredients to make " + getDetails.rows[0].MealName + " from " + JSON.parse(JSON.stringify(getDetails.rows[0].Response)).restaurantChain}});
+        ingred = getResult2.data.result;
         const updateDB = await axios.get(process.env.AUTH0_BASE_URL?.toString() + "/api/UpdateInstruct", {params: {id: dishid, instruct:instruct, ingred:ingred}});
     }
 
@@ -93,7 +95,7 @@ const DishPage = ({ params }: InferGetServerSidePropsType<typeof getServerSidePr
     const authInsert = api.db.InsertUser.useMutation();
 
     console.log(params);
-    
+
     // @ts-ignore
     const AddLibrary = api.example.addDishLibrary.useMutation({dishid: params.dishid, userid: params.user.sub});const RemoveLibrary = api.example.removeDishLibrary.useMutation({dishid: params.dishid, userid: params.user.sub});
     const [AddedLib, SetAddedLib] = useState(params.islibrary);

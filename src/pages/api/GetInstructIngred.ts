@@ -19,5 +19,5 @@ export default async function GetInstructIngred(req: NextApiRequest, res: NextAp
     const completion = await openai.createChatCompletion({model: "gpt-3.5-turbo", messages: messages});
     const text = completion.data.choices[0]?.message;
 
-    res.status(200).json({instruct: text?.content.split("Instructions:")[1]?.toString(), ingred: text?.content.split("Ingredients:")[1]?.toString().split("Instructions:")[0]?.toString().split(" - ").toString()});
+    res.status(200).json({result: text?.content});
 }
