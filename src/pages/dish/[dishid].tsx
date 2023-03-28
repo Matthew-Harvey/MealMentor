@@ -42,7 +42,6 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
     }
 
     const HowToMakeCheck = await conn.execute("SELECT Instructions, Ingredients FROM meals WHERE MealID = ?", [dishid]);
-    let shouldgenerate = true;
     let instruct = "";
     let ingred = "";
     // @ts-ignore
@@ -51,13 +50,12 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
         instruct = HowToMakeCheck.rows[0].Instructions.toString(),
         // @ts-ignore
         ingred = HowToMakeCheck.rows[0].Ingredients.toString()
-        shouldgenerate = false;
+    } else {
+        // @ts-ignore
+        const getResult = await axios.get(process.env.AUTH0_BASE_URL?.toString() + "/api/GetInstructIngred", {params: {id: dishid, message: "Please give instructions to make " + getDetails.rows[0].MealName + " from " + JSON.parse(JSON.stringify(getDetails.rows[0].Response)).restaurantChain}});
+        ingred = getResult.data.ingred;
+        instruct = getResult.data.instruct;
     }
-
-
-    // @ts-ignore
-    const getResult = await axios.get(process.env.AUTH0_BASE_URL?.toString() + "/api/GetInstructIngred", {params: {id: dishid, message: "Please give instructions to make " + getDetails.rows[0].MealName + " from " + JSON.parse(JSON.stringify(getDetails.rows[0])).Response.restaurantChain}});
-    console.log(getResult.data)
 
     const items = await getSearchResults();
     
@@ -71,12 +69,12 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
         if (isdemo == "true") {
             return {
                 // @ts-ignore
-                props: { params: {shouldgenerate, instruct, ingred, isdemo: true, details: demodetails, dishid, name: getDetails.rows[0].MealName, dishdetails: getDetails.rows[0].Response, loggedin, user:user.user, islibrary:islibrary, items}}
+                props: { params: {instruct, ingred, isdemo: true, details: demodetails, dishid, name: getDetails.rows[0].MealName, dishdetails: getDetails.rows[0].Response, loggedin, user:user.user, islibrary:islibrary, items}}
             }
         } else {
             return {
                 // @ts-ignore
-                props: { params: {shouldgenerate, instruct, ingred, isdemo: false, details: demodetails, dishid, name: getDetails.rows[0].MealName, dishdetails: getDetails.rows[0].Response, loggedin, user:user.user, islibrary:islibrary, items}}
+                props: { params: {instruct, ingred, isdemo: false, details: demodetails, dishid, name: getDetails.rows[0].MealName, dishdetails: getDetails.rows[0].Response, loggedin, user:user.user, islibrary:islibrary, items}}
             }
         }
     } else {
@@ -92,36 +90,21 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
 const DishPage = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
     const dishdetails = JSON.parse(params.dishdetails);
     const authInsert = api.db.InsertUser.useMutation();
-    // @ts-ignore
-    const updateAfterGPT = api.example.UpdateInstructIngred.useMutation({dishid: params.dishid, userid: params.user.sub})
 
     // @ts-ignore
     const AddLibrary = api.example.addDishLibrary.useMutation({dishid: params.dishid, userid: params.user.sub});const RemoveLibrary = api.example.removeDishLibrary.useMutation({dishid: params.dishid, userid: params.user.sub});
     const [AddedLib, SetAddedLib] = useState(params.islibrary);
 
-    let queryGPT : any;
-    if (params.shouldgenerate == true) {
-        try {
-            queryGPT = api.example.HowToMakeDishGPT.useQuery({text: "Please give instructions to make " + params.name + " from " + dishdetails.restaurantChain, id: params.dishid, type: "instruct"});
-        } catch {queryGPT = {data:{instruct: params.instruct, ingred: params.ingred}};}
-    } else {
-        queryGPT = {data:{instruct: params.instruct, ingred: params.ingred}};
-    }
-
     function AddToLibrary(){
         authInsert.mutate({ user: JSON.parse(JSON.stringify(params.user)) });
         // @ts-ignore
         AddLibrary.mutate({dishid: params.dishid, userid: params.user.sub});
-        // @ts-ignore
-        updateAfterGPT.mutate({instruct: queryGPT.data.instruct, id: params.dishid, ingred: queryGPT.data.ingred})
         SetAddedLib(true);
     }
     function RemoveFromLibrary(){
         authInsert.mutate({ user: JSON.parse(JSON.stringify(params.user)) });
         // @ts-ignore
         RemoveLibrary.mutate({dishid: params.dishid, userid: params.user.sub});
-        // @ts-ignore
-        updateAfterGPT.mutate({instruct: queryGPT.data.instruct, id: params.dishid, ingred: queryGPT.data.ingred})
         SetAddedLib(false);
     }
 
@@ -135,27 +118,13 @@ const DishPage = ({ params }: InferGetServerSidePropsType<typeof getServerSidePr
                 </h1>
                 <h2 className="font-semibold text-4xl mt-4 mb-10 text-[#DB6310]">From {dishdetails.restaurantChain}</h2>
                 <div className="grid grid-cols-3 max-w-6xl">
-                    {queryGPT.data ? 
-                        <>
-                            <div className="col-span-2 text-white">
-                                <h2 className="bold underline text-lg mb-1">Ingredients:</h2>
-                                <p>{queryGPT.data?.ingred}</p>
-                                <br />
-                                <h2 className="bold underline text-lg mb-1">Instructions:</h2>
-                                <p>{queryGPT.data?.instruct}</p>
-                            </div>
-                        </>
-                        :
-                        <>
-                            <div className="col-span-2 text-white">
-                                <h2 className="bold underline text-lg mb-1">Ingredients:</h2>
-                                <p>Generating ingredients..</p>
-                                <br />
-                                <h2 className="bold underline text-lg mb-1">Instructions:</h2>
-                                <p>Generating instructions..</p>
-                            </div>
-                        </>
-                    }
+                    <div className="col-span-2 text-white">
+                        <h2 className="bold underline text-lg mb-1">Ingredients:</h2>
+                        <p>{params.ingred}</p>
+                        <br />
+                        <h2 className="bold underline text-lg mb-1">Instructions:</h2>
+                        <p>{params.instruct}</p>
+                    </div>
                     <img src={dishdetails.image} alt="Dish Image" className="rounded-lg m-auto shadow-lg" />
                 </div>
                 {params.loggedin ?

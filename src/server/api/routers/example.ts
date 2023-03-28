@@ -52,43 +52,7 @@ export const exampleRouter = createTRPCRouter({
         api_test: text,
       };
     }),
-
-  HowToMakeDishGPT: publicProcedure
-    .input(z.object({ text: z.string(), id: z.any(), type: z.string() }))
-    .query(async ({ input }) => {
-      
-      const conn = connect(config);
-
-      const openai = new OpenAIApi(configuration);
-      const messages = [];
-      messages.push({ role: "user", content: input.text });
-
-      // @ts-ignore
-      const completion = await openai.createChatCompletion({model: "gpt-3.5-turbo", messages: messages});
-      const text = completion.data.choices[0]?.message;
-
-      await conn.execute("UPDATE meals SET Instructions = ?, Ingredients = ? WHERE MealID = ?", 
-        [text?.content.split("Instructions:")[1]?.toString(), text?.content.split("Ingredients:")[1]?.toString().split("Instructions:")[0]?.toString().split(" - ").toString(), input.id]
-      )
-
-      return {
-        instruct: text?.content.split("Instructions:")[1]?.toString(),
-        ingred: text?.content.split("Ingredients:")[1]?.toString().split("Instructions:")[0]?.toString().split(" - ").toString()
-      };
-    }),
-
-  UpdateInstructIngred: publicProcedure
-    .input(z.object({ instruct: z.string(), id: z.string(), ingred: z.string() }))
-    .mutation(async ( { input }) => {
-      const conn = connect(config);
-      await conn.execute("UPDATE meals SET Instructions = ?, Ingredients = ? WHERE MealID = ?", 
-        [input.instruct, input.ingred, input.id]
-      )
-      return {
-        result: "complete"
-      };
-  }),
-
+    
   getApiResults: publicProcedure
     .input(z.object({ text: z.string() }))
     .mutation(async ({ input }) => {
