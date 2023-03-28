@@ -86,27 +86,36 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
 const DishPage = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
     const dishdetails = JSON.parse(params.dishdetails);
     const authInsert = api.db.InsertUser.useMutation();
-    let queryGPT: any;
-    if (params.shouldgenerate == true) {
-        queryGPT = api.example.HowToMakeDishGPT.useQuery({text: "Please give some instructions to make " + params.name + " from " + dishdetails.restaurantChain, id: params.dishid, type: "instruct"});
-    } else {
-        queryGPT = {data:{instruct: params.instruct, ingred: params.ingred}};
-    }
+    // @ts-ignore
+    const updateAfterGPT = api.example.UpdateInstructIngred.useMutation({dishid: params.dishid, userid: params.user.sub})
 
     // @ts-ignore
     const AddLibrary = api.example.addDishLibrary.useMutation({dishid: params.dishid, userid: params.user.sub});const RemoveLibrary = api.example.removeDishLibrary.useMutation({dishid: params.dishid, userid: params.user.sub});
     const [AddedLib, SetAddedLib] = useState(params.islibrary);
 
+    let queryGPT : any;
+    if (params.shouldgenerate == true) {
+        try {
+            queryGPT = api.example.HowToMakeDishGPT.useQuery({text: "Please give some instructions to make " + params.name + " from " + dishdetails.restaurantChain, id: params.dishid, type: "instruct"});
+        } catch {queryGPT = {data:{instruct: params.instruct, ingred: params.ingred}};}
+    } else {
+        queryGPT = {data:{instruct: params.instruct, ingred: params.ingred}};
+    }
+
     function AddToLibrary(){
         authInsert.mutate({ user: JSON.parse(JSON.stringify(params.user)) });
         // @ts-ignore
         AddLibrary.mutate({dishid: params.dishid, userid: params.user.sub});
+        // @ts-ignore
+        updateAfterGPT.mutate({instruct: queryGPT.data.instruct, id: params.dishid, ingred: queryGPT.data.ingred})
         SetAddedLib(true);
     }
     function RemoveFromLibrary(){
         authInsert.mutate({ user: JSON.parse(JSON.stringify(params.user)) });
         // @ts-ignore
         RemoveLibrary.mutate({dishid: params.dishid, userid: params.user.sub});
+        // @ts-ignore
+        updateAfterGPT.mutate({instruct: queryGPT.data.instruct, id: params.dishid, ingred: queryGPT.data.ingred})
         SetAddedLib(false);
     }
 

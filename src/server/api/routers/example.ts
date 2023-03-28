@@ -58,6 +58,7 @@ export const exampleRouter = createTRPCRouter({
     .query(async ({ input }) => {
       
       const conn = connect(config);
+
       const openai = new OpenAIApi(configuration);
       const messages = [];
       messages.push({ role: "user", content: input.text });
@@ -75,6 +76,21 @@ export const exampleRouter = createTRPCRouter({
         ingred: text?.content.split("Ingredients:")[1]?.toString().split("Instructions:")[0]?.toString().split(" - ").toString()
       };
     }),
+
+  UpdateInstructIngred: publicProcedure
+    .input(z.object({ instruct: z.string(), id: z.string(), ingred: z.string() }))
+    .mutation(async ( { input }) => {
+      
+      const conn = connect(config);
+
+      await conn.execute("UPDATE meals SET Instructions = ?, Ingredients = ? WHERE MealID = ?", 
+        [input.instruct, input.ingred, input.id]
+      )
+
+      return {
+        result: "complete"
+      };
+  }),
 
   getApiResults: publicProcedure
     .input(z.object({ text: z.string() }))
