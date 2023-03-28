@@ -21,6 +21,7 @@ import { config } from "~/server/api/routers/db_actions";
 import { useState } from "react";
 import { getSession } from "@auth0/nextjs-auth0";
 import { getSearchResults } from "~/functions/getalldish";
+import axios from "axios";
 
 export async function getServerSideProps(context : GetServerSidePropsContext) {
     const isdemo = context.query.demo;
@@ -52,6 +53,11 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
         ingred = HowToMakeCheck.rows[0].Ingredients.toString()
         shouldgenerate = false;
     }
+
+
+    // @ts-ignore
+    const getResult = await axios.get(process.env.AUTH0_BASE_URL?.toString() + "/api/GetInstructIngred", {params: {id: dishid, message: "Please give instructions to make " + getDetails.rows[0].MealName + " from " + JSON.parse(JSON.stringify(getDetails.rows[0])).Response.restaurantChain}});
+    console.log(getResult.data)
 
     const items = await getSearchResults();
     
@@ -96,7 +102,7 @@ const DishPage = ({ params }: InferGetServerSidePropsType<typeof getServerSidePr
     let queryGPT : any;
     if (params.shouldgenerate == true) {
         try {
-            queryGPT = api.example.HowToMakeDishGPT.useQuery({text: "Please give some instructions to make " + params.name + " from " + dishdetails.restaurantChain, id: params.dishid, type: "instruct"});
+            queryGPT = api.example.HowToMakeDishGPT.useQuery({text: "Please give instructions to make " + params.name + " from " + dishdetails.restaurantChain, id: params.dishid, type: "instruct"});
         } catch {queryGPT = {data:{instruct: params.instruct, ingred: params.ingred}};}
     } else {
         queryGPT = {data:{instruct: params.instruct, ingred: params.ingred}};
