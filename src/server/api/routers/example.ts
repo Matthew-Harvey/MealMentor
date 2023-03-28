@@ -58,34 +58,22 @@ export const exampleRouter = createTRPCRouter({
     .query(async ({ input }) => {
       
       const conn = connect(config);
-      const HowToMakeCheck = await conn.execute("SELECT Instructions, Ingredients FROM meals WHERE MealID = ?", [input.id]);
+      const openai = new OpenAIApi(configuration);
+      const messages = [];
+      messages.push({ role: "user", content: input.text });
+
       // @ts-ignore
-      if (HowToMakeCheck.rows[0].Instructions != null) {
-        return {
-          // @ts-ignore
-          instruct: HowToMakeCheck.rows[0].Instructions.toString(),
-          // @ts-ignore
-          ingred: HowToMakeCheck.rows[0].Ingredients.toString()
-        };
-      } else {
-        const openai = new OpenAIApi(configuration);
-        const messages = [];
-        messages.push({ role: "user", content: input.text });
+      const completion = await openai.createChatCompletion({model: "gpt-3.5-turbo", messages: messages});
+      const text = completion.data.choices[0]?.message;
 
-        // @ts-ignore
-        const completion = await openai.createChatCompletion({model: "gpt-3.5-turbo", messages: messages});
-        const text = completion.data.choices[0]?.message;
+      await conn.execute("UPDATE meals SET Instructions = ?, Ingredients = ? WHERE MealID = ?", 
+        [text?.content.split("Instructions:")[1]?.toString(), text?.content.split("Ingredients:")[1]?.toString().split("Instructions:")[0]?.toString().split(" - ").toString(), input.id]
+      )
 
-        await conn.execute("UPDATE meals SET Instructions = ?, Ingredients = ? WHERE MealID = ?", 
-            [text?.content.split("Instructions:")[1]?.toString(), text?.content.split("Ingredients:")[1]?.toString().split("Instructions:")[0]?.toString().split(" - ").toString(), input.id]
-        )
-
-        return {
-          instruct: text?.content.split("Instructions:")[1]?.toString(),
-          // @ts-ignore
-          ingred: text?.content.split("Ingredients:")[1]?.toString().split("Instructions:")[0]?.toString().split(" - ").toString()
-        };
-      }
+      return {
+        instruct: text?.content.split("Instructions:")[1]?.toString(),
+        ingred: text?.content.split("Ingredients:")[1]?.toString().split("Instructions:")[0]?.toString().split(" - ").toString()
+      };
     }),
 
   getApiResults: publicProcedure

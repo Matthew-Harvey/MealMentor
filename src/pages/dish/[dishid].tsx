@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -39,6 +40,19 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
         user = {};user.user = demodetails;
     }
 
+    const HowToMakeCheck = await conn.execute("SELECT Instructions, Ingredients FROM meals WHERE MealID = ?", [dishid]);
+    let shouldgenerate = true;
+    let instruct = "";
+    let ingred = "";
+    // @ts-ignore
+    if (HowToMakeCheck.rows[0].Instructions != null) {
+        // @ts-ignore
+        instruct = HowToMakeCheck.rows[0].Instructions.toString(),
+        // @ts-ignore
+        ingred = HowToMakeCheck.rows[0].Ingredients.toString()
+        shouldgenerate = false;
+    }
+
     const items = await getSearchResults();
     
     if (getDetails.size > 0) {
@@ -51,12 +65,12 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
         if (isdemo == "true") {
             return {
                 // @ts-ignore
-                props: { params: {isdemo: true, details: demodetails, dishid, name: getDetails.rows[0].MealName, dishdetails: getDetails.rows[0].Response, loggedin, user:user.user, islibrary:islibrary, items}}
+                props: { params: {shouldgenerate, instruct, ingred, isdemo: true, details: demodetails, dishid, name: getDetails.rows[0].MealName, dishdetails: getDetails.rows[0].Response, loggedin, user:user.user, islibrary:islibrary, items}}
             }
         } else {
             return {
                 // @ts-ignore
-                props: { params: {isdemo: false, details: demodetails, dishid, name: getDetails.rows[0].MealName, dishdetails: getDetails.rows[0].Response, loggedin, user:user.user, islibrary:islibrary, items}}
+                props: { params: {shouldgenerate, instruct, ingred, isdemo: false, details: demodetails, dishid, name: getDetails.rows[0].MealName, dishdetails: getDetails.rows[0].Response, loggedin, user:user.user, islibrary:islibrary, items}}
             }
         }
     } else {
@@ -72,7 +86,12 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
 const DishPage = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
     const dishdetails = JSON.parse(params.dishdetails);
     const authInsert = api.db.InsertUser.useMutation();
-    const queryGPT = api.example.HowToMakeDishGPT.useQuery({text: "Please give some instructions to make " + params.name + " from " + dishdetails.restaurantChain, id: params.dishid, type: "instruct"});
+    let queryGPT: any;
+    if (params.shouldgenerate == true) {
+        queryGPT = api.example.HowToMakeDishGPT.useQuery({text: "Please give some instructions to make " + params.name + " from " + dishdetails.restaurantChain, id: params.dishid, type: "instruct"});
+    } else {
+        queryGPT = {data:{instruct: params.instruct, ingred: params.ingred}};
+    }
 
     // @ts-ignore
     const AddLibrary = api.example.addDishLibrary.useMutation({dishid: params.dishid, userid: params.user.sub});const RemoveLibrary = api.example.removeDishLibrary.useMutation({dishid: params.dishid, userid: params.user.sub});
