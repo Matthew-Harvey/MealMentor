@@ -92,6 +92,8 @@ const DishPage = ({ params }: InferGetServerSidePropsType<typeof getServerSidePr
     const dishdetails = JSON.parse(params.dishdetails);
     const authInsert = api.db.InsertUser.useMutation();
 
+    console.log(params);
+    
     // @ts-ignore
     const AddLibrary = api.example.addDishLibrary.useMutation({dishid: params.dishid, userid: params.user.sub});const RemoveLibrary = api.example.removeDishLibrary.useMutation({dishid: params.dishid, userid: params.user.sub});
     const [AddedLib, SetAddedLib] = useState(params.islibrary);
