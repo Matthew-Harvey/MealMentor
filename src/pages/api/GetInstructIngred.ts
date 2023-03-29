@@ -15,8 +15,8 @@ export default async function GetInstructIngred(req: NextApiRequest, res: NextAp
     const openai = new OpenAIApi(configuration);
     const messages = [];
     messages.push({ role: "user", content: req.query.message });
-    // @ts-ignore
-    const completion = await openai.createChatCompletion({model: "gpt-3.5-turbo", messages: messages});
+    // @ts-ignore q
+    const completion = await openai.createChatCompletion({model: "gpt-3.5-turbo", messages: messages, max_tokens: 500});
     const text = completion.data.choices[0]?.message;
 
     res.status(200).json({result: text?.content});
