@@ -81,6 +81,14 @@ export const exampleRouter = createTRPCRouter({
       return { mealjson: JSON.stringify(mealjson)};
     }),
 
+  UpdateInstructIngredient: publicProcedure
+    .input(z.object({ dishid: z.string(), HowToMake: z.string()}))
+    .mutation(async ({ input }) => {
+      const conn = connect(config);
+      await conn.execute("UPDATE meals SET HowToMake = ? WHERE MealID = ?", [input.HowToMake, input.dishid]);
+      return { result: "Updated instruction + ingredient for dish " + input.dishid};
+    }),
+
   addDishLibrary: publicProcedure
     .input(z.object({ dishid: z.string(), userid: z.string() }))
     .mutation(async ({ input }) => {

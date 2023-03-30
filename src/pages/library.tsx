@@ -45,6 +45,7 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
       // @ts-ignore
       try{arr.push(dish.rows[0])}catch{}
   }
+  console.log(arr);
 
   if (isdemo == "true" && loggedin == true) {
     return {

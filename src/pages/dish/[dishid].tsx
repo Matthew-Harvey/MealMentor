@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-inferrable-types */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -31,6 +32,13 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
     const conn = connect(config);
     const getDetails = await conn.execute("SELECT * FROM meals WHERE MealID = ?", [dishid]);
 
+    let HowToMake = null;
+    // @ts-ignore
+    if (getDetails.rows[0].HowToMake) {
+        // @ts-ignore
+        HowToMake = getDetails.rows[0].HowToMake;
+    }
+
     let user = await getSession(context.req, context.res);
     let loggedin = false;
     if (user?.user){
@@ -54,12 +62,12 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
         if (isdemo == "true") {
             return {
                 // @ts-ignore
-                props: { params: {isdemo: true, details: demodetails, dishid, name: getDetails.rows[0].MealName, dishdetails: getDetails.rows[0].Response, loggedin, user:user.user, islibrary:islibrary, items}}
+                props: { params: {HowToMake, isdemo: true, details: demodetails, dishid, name: getDetails.rows[0].MealName, dishdetails: getDetails.rows[0].Response, loggedin, user:user.user, islibrary:islibrary, items}}
             }
         } else {
             return {
                 // @ts-ignore
-                props: { params: {isdemo: false, details: demodetails, dishid, name: getDetails.rows[0].MealName, dishdetails: getDetails.rows[0].Response, loggedin, user:user.user, islibrary:islibrary, items}}
+                props: { params: {HowToMake, isdemo: false, details: demodetails, dishid, name: getDetails.rows[0].MealName, dishdetails: getDetails.rows[0].Response, loggedin, user:user.user, islibrary:islibrary, items}}
             }
         }
     } else {
@@ -74,8 +82,8 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
 
 const DishPage = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
     const dishdetails = JSON.parse(params.dishdetails);
-    //@ts-ignore
     const authInsert = api.db.InsertUser.useMutation();
+    const updateInstructIngred = api.example.UpdateInstructIngredient.useMutation();
 
     // @ts-ignore
     const AddLibrary = api.example.addDishLibrary.useMutation({dishid: params.dishid, userid: params.user.sub});const RemoveLibrary = api.example.removeDishLibrary.useMutation({dishid: params.dishid, userid: params.user.sub});
@@ -96,7 +104,6 @@ const DishPage = ({ params }: InferGetServerSidePropsType<typeof getServerSidePr
 
     const [generatedBios, setGeneratedBios] = useState("");
 
-    const bioRef = useRef<null | HTMLDivElement>(null);
     const prompt = `Please give Instructions and Ingredients to make ${params.name} from ${dishdetails.restaurantChain}`;
     const generateBio = async (e: any) => {
         e.preventDefault();
@@ -125,11 +132,26 @@ const DishPage = ({ params }: InferGetServerSidePropsType<typeof getServerSidePr
         const decoder = new TextDecoder();
         let done = false;
     
-        while (!done) {
-          const { value, done: doneReading } = await reader.read();
-          done = doneReading;
-          const chunkValue = decoder.decode(value);
-          setGeneratedBios((prev) => prev + chunkValue);
+        let overall_value:string = "";
+        if (params.HowToMake != null) {
+            const splitMake = params.HowToMake.split("");
+            splitMake.forEach(async (letter: string) => {
+                await delay(300);
+                overall_value = overall_value + letter;
+                setGeneratedBios((prev) => prev + letter);
+            });
+        } else {
+            while (!done) {
+                const { value, done: doneReading } = await reader.read();
+                done = doneReading;
+                const chunkValue = decoder.decode(value);
+                overall_value = overall_value + chunkValue;
+                setGeneratedBios((prev) => prev + chunkValue);
+            }
+        }
+        if (done) {
+            // @ts-ignore
+            updateInstructIngred.mutate({dishid: params.dishid, HowToMake: overall_value})
         }
       };
 
@@ -184,3 +206,9 @@ const DishPage = ({ params }: InferGetServerSidePropsType<typeof getServerSidePr
 };
 
 export default DishPage;
+
+function delay(milliseconds: number){
+    return new Promise(resolve => {
+        setTimeout(resolve, milliseconds);
+    });
+}
