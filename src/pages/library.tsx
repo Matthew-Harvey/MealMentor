@@ -37,7 +37,7 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
   const items = await getSearchResults();
 
   const conn = connect(config);
-  const LibraryCheck = await conn.execute("SELECT * FROM meal_history WHERE UserID = ?", [user?.user.sub]);
+  const LibraryCheck = await conn.execute("SELECT * FROM user_library WHERE UserID = ?", [user?.user.sub]);
   const arr = [];
   for (const x in LibraryCheck.rows) {
       // @ts-ignore
@@ -45,7 +45,6 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
       // @ts-ignore
       try{arr.push(dish.rows[0])}catch{}
   }
-  console.log(arr);
 
   if (isdemo == "true" && loggedin == true) {
     return {

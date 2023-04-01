@@ -93,15 +93,24 @@ export const exampleRouter = createTRPCRouter({
     .input(z.object({ dishid: z.string(), userid: z.string() }))
     .mutation(async ({ input }) => {
       const conn = connect(config);
-      await conn.execute("INSERT IGNORE INTO meal_history (MealID, UserID) VALUES (?,?)", [input.dishid, input.userid]);
-      return { result: "Added into meal_history"};
+      await conn.execute("INSERT IGNORE INTO user_library (MealID, UserID) VALUES (?,?)", [input.dishid, input.userid]);
+      return { result: "Added into user_library"};
     }),
 
   removeDishLibrary: publicProcedure
     .input(z.object({ dishid: z.string(), userid: z.string() }))
     .mutation(async ({ input }) => {
       const conn = connect(config);
-      await conn.execute("DELETE FROM meal_history WHERE MealID = ? AND UserID = ?", [input.dishid, input.userid]);
-      return { result: "Removed from meal_history"};
+      await conn.execute("DELETE FROM user_library WHERE MealID = ? AND UserID = ?", [input.dishid, input.userid]);
+      return { result: "Removed from user_library"};
+    }),
+
+  AddUserRecentView: publicProcedure
+    .input(z.object({ dishid: z.string(), userid: z.string() }))
+    .query(async ({ input }) => {
+      const conn = connect(config);
+      await conn.execute("DELETE FROM user_recentview WHERE MealID = ? AND UserID = ?", [input.dishid, input.userid]);
+      await conn.execute("INSERT IGNORE INTO user_recentview (MealID, UserID, time_viewed) VALUES (?,?,?)", [input.dishid, input.userid, new Date().getMilliseconds()]);
+      return { result: "added to user_recentview"};
     }),
 });

@@ -16,13 +16,13 @@ export const DBrouter = createTRPCRouter({
     await conn.execute(
     `
 
-      DROP TABLE IF EXISTS meal_history, users, meals
+      DROP TABLE IF EXISTS users, meals, user_library, user_recentview
 
     `);
     await conn.execute(
     `
 
-    CREATE TABLE meal_history (
+    CREATE TABLE user_library (
       UserID varchar(255) NOT NULL,
       MealID varchar(255) NOT NULL,
       PRIMARY KEY (UserID, MealID)
@@ -57,7 +57,18 @@ export const DBrouter = createTRPCRouter({
         PRIMARY KEY (MealID)
       )
   
-      `);
+    `);
+    await conn.execute(
+        `
+    
+        CREATE TABLE user_recentview (
+          MealID varchar(255) NOT NULL,
+          UserID varchar(255) NOT NULL,
+          time_viewed integer,
+          PRIMARY KEY (UserID, MealID)
+        )
+    
+    `);
     return {
       results: "complete"
     };

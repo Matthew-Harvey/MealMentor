@@ -53,8 +53,14 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
     const items = await getSearchResults();
     
     if (getDetails.size > 0) {
+        if (loggedin == true) {
+            // @ts-ignore
+            const conn = connect(config);
+            await conn.execute("DELETE FROM user_recentview WHERE MealID = ? AND UserID = ?", [dishid, user?.user.sub]);
+            await conn.execute("INSERT IGNORE INTO user_recentview (MealID, UserID, time_viewed) VALUES (?,?,?)", [dishid, user?.user.sub, new Date().getTime()]);
+        }
         const conn = connect(config);
-        const LibraryCheck = await conn.execute("SELECT * FROM meal_history WHERE MealID = ? AND UserID = ?", [dishid, user?.user.sub]);
+        const LibraryCheck = await conn.execute("SELECT * FROM user_library WHERE MealID = ? AND UserID = ?", [dishid, user?.user.sub]);
         let islibrary = false;
         if (LibraryCheck.size > 0){
             islibrary = true;
