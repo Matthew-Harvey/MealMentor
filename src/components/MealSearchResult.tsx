@@ -9,6 +9,7 @@
 import router from "next/router";
 
 const MealSearchResult = ({id, title, image, restaurantChain, isdemo }: any) => {
+    console.log(restaurantChain)
   return (
     <>
         <article key={id} className="rounded-xl m-auto w-96 cursor-pointer shadow bg-[#313131] p-2 my-4 hover:scale-105 ease-in-out transition" onClick={() => router.push("/dish/" + id + isdemo)}>
@@ -24,7 +25,9 @@ const MealSearchResult = ({id, title, image, restaurantChain, isdemo }: any) => 
                 <div className="flow-root">
                     <ul className="-m-1 flex flex-wrap">
                         <li className="p-1 leading-none">
-                            <p className="text-lg font-medium text-gray-300 italic">From {restaurantChain}</p>
+                            {restaurantChain &&
+                                <p className="text-lg font-medium text-gray-300 italic">From {restaurantChain}</p>
+                            }
                         </li>
                     </ul>
                 </div>

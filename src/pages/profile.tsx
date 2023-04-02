@@ -97,14 +97,17 @@ const Profile = ({ params }: InferGetServerSidePropsType<typeof getServerSidePro
               <h2 className="text-left max-w-6xl underline">Recent</h2>
               {params.recent.map((meal: any) => 
                   <>
-                    {parseInt(((params.now_time - meal.time)/1000/60).toString()) > 60 &&
-                      <p className="text-left text-gray-200 italic my-2" onClick={()=> router.push("/dish/" + meal.mealinfo.MealID)}>{meal.mealinfo.MealName} - {parseInt(((params.now_time - meal.time)/1000/60).toString())}h</p>
+                    {console.log(parseFloat(((params.now_time - meal.time)/86400000).toFixed(0)), "d")}
+                    {console.log(parseFloat(((params.now_time - meal.time)/3600000).toFixed(0)), "h")}
+                    {console.log(parseFloat(((params.now_time - meal.time)/60000).toFixed(0)), "m")}
+                    {parseInt(((params.now_time - meal.time)/86400000).toFixed(0)) > 1 &&
+                      <p className="text-left text-gray-200 italic my-2" onClick={()=> router.push("/dish/" + meal.mealinfo.MealID)}>{meal.mealinfo.MealName} - {parseInt(((params.now_time - meal.time)/86400000).toFixed(0))}d</p>
                     }
-                    {parseInt(((params.now_time - meal.time)/1000/60/60).toString()) > 24 &&
-                      <p className="text-left text-gray-200 italic my-2" onClick={()=> router.push("/dish/" + meal.mealinfo.MealID)}>{meal.mealinfo.MealName} - {parseInt(((params.now_time - meal.time)/1000/60).toString())}d</p>
+                    {parseInt(((params.now_time - meal.time)/3600000).toFixed(0)) > 1 && parseInt(((params.now_time - meal.time)/86400000).toFixed(0)) <= 1 &&
+                      <p className="text-left text-gray-200 italic my-2" onClick={()=> router.push("/dish/" + meal.mealinfo.MealID)}>{meal.mealinfo.MealName} - {parseInt(((params.now_time - meal.time)/3600000).toFixed(0))}h</p>
                     }
-                    {parseInt(((params.now_time - meal.time)/1000/60).toString()) <= 60 &&
-                      <p className="text-left text-gray-200 italic my-2" onClick={()=> router.push("/dish/" + meal.mealinfo.MealID)}>{meal.mealinfo.MealName} - {parseInt(((params.now_time - meal.time)/1000/60).toString())}m</p>
+                    {parseFloat(((params.now_time - meal.time)/60000).toFixed(0)) < 1 &&
+                      <p className="text-left text-gray-200 italic my-2" onClick={()=> router.push("/dish/" + meal.mealinfo.MealID)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/60000).toFixed(0))}m</p>
                     }
                   </>
               )}

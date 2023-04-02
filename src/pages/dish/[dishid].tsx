@@ -52,12 +52,13 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
 
     const items = await getSearchResults();
     
+    const dateMili = new Date().getTime();
     if (getDetails.size > 0) {
         if (loggedin == true) {
             // @ts-ignore
             const conn = connect(config);
             await conn.execute("DELETE FROM user_recentview WHERE MealID = ? AND UserID = ?", [dishid, user?.user.sub]);
-            await conn.execute("INSERT IGNORE INTO user_recentview (MealID, UserID, time_viewed) VALUES (?,?,?)", [dishid, user?.user.sub, new Date().getTime()]);
+            await conn.execute("INSERT IGNORE INTO user_recentview (MealID, UserID, time_viewed) VALUES (?,?,?)", [dishid, user?.user.sub, dateMili]);
         }
         const conn = connect(config);
         const LibraryCheck = await conn.execute("SELECT * FROM user_library WHERE MealID = ? AND UserID = ?", [dishid, user?.user.sub]);
@@ -110,43 +111,50 @@ const DishPage = ({ params }: InferGetServerSidePropsType<typeof getServerSidePr
 
     const [generatedBios, setGeneratedBios] = useState("");
 
-    const prompt = `Please give Instructions and Ingredients to make ${params.name} from ${dishdetails.restaurantChain}`;
+    let prompt = "";
+    if (dishdetails.restaurantChain) {
+        prompt = `Please give Instructions and Ingredients to make ${params.name} from ${dishdetails.restaurantChain}`;
+    } else {
+        prompt = `Please give Instructions and Ingredients to make ${params.name}`;
+    }
+
     const generateBio = async (e: any) => {
         e.preventDefault();
         setGeneratedBios("");
-        const response = await fetch("/api/generate", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            prompt,
-          }),
-        });
-    
-        if (!response.ok) {
-          throw new Error(response.statusText);
-        }
-    
-        // This data is a ReadableStream
-        const data = response.body;
-        if (!data) {
-          return;
-        }
-    
-        const reader = data.getReader();
-        const decoder = new TextDecoder();
-        let done = false;
-    
         let overall_value:string = "";
+
         if (params.HowToMake != null) {
             const splitMake = params.HowToMake.split("");
             splitMake.forEach(async (letter: string) => {
-                await delay(300);
+                await delay(400);
                 overall_value = overall_value + letter;
                 setGeneratedBios((prev) => prev + letter);
             });
         } else {
+
+            const response = await fetch("/api/generate", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    prompt,
+                }),
+            });
+        
+            if (!response.ok) {
+                throw new Error(response.statusText);
+            }
+        
+            // This data is a ReadableStream
+            const data = response.body;
+            if (!data) {
+                return;
+            }
+        
+            const reader = data.getReader();
+            const decoder = new TextDecoder();
+            let done = false;
             while (!done) {
                 const { value, done: doneReading } = await reader.read();
                 done = doneReading;
@@ -154,10 +162,10 @@ const DishPage = ({ params }: InferGetServerSidePropsType<typeof getServerSidePr
                 overall_value = overall_value + chunkValue;
                 setGeneratedBios((prev) => prev + chunkValue);
             }
-        }
-        if (done) {
-            // @ts-ignore
-            updateInstructIngred.mutate({dishid: params.dishid, HowToMake: overall_value})
+            if (done) {
+                // @ts-ignore
+                updateInstructIngred.mutate({dishid: params.dishid, HowToMake: overall_value})
+            }
         }
       };
 
@@ -171,7 +179,9 @@ const DishPage = ({ params }: InferGetServerSidePropsType<typeof getServerSidePr
                         <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
                             <span className="text-white">{params.name}</span>
                         </h1>
-                        <h2 className="font-semibold text-4xl mt-4 mb-10 text-[#DB6310]">From {dishdetails.restaurantChain}</h2>
+                        {dishdetails.restaurantChain &&
+                            <h2 className="font-semibold text-4xl mt-4 mb-10 text-[#DB6310]">From {dishdetails.restaurantChain}</h2>
+                        }
                     </div>
                     <img src={dishdetails.image} alt="Dish Image" className="rounded-lg m-auto shadow-lg" />
                 </div>

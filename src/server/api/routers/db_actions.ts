@@ -54,6 +54,7 @@ export const DBrouter = createTRPCRouter({
         MealName varchar(255) NOT NULL,
         Response varchar(255),
         HowToMake TEXT,
+        MealType varchar(255) NOT NULL,
         PRIMARY KEY (MealID)
       )
   
@@ -64,7 +65,7 @@ export const DBrouter = createTRPCRouter({
         CREATE TABLE user_recentview (
           MealID varchar(255) NOT NULL,
           UserID varchar(255) NOT NULL,
-          time_viewed integer,
+          time_viewed BIGINT,
           PRIMARY KEY (UserID, MealID)
         )
     

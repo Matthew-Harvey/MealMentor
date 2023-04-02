@@ -82,7 +82,7 @@ const Library = ({ params }: InferGetServerSidePropsType<typeof getServerSidePro
                 <span className="text-[#DB6310]">Your </span>Library
             </h1>
             <div className="text-2xl text-white">
-              <div className="grid grid-cols-2 max-w-4xl px-2 gap-0 m-auto">
+              <div className="grid grid-cols-2 md:max-w-4xl px-2 gap-0 m-auto">
                 {params.lib.map((meal: any) => 
                   <>
                     <MealSearchResult title={meal.MealName} id={meal.MealID} image={JSON.parse(meal.Response).image} restaurantChain={JSON.parse(meal.Response).restaurantChain} isdemo={isdemo} />
