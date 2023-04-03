@@ -20,6 +20,7 @@ import { config } from "~/server/api/routers/db_actions";
 import { getSession } from "@auth0/nextjs-auth0";
 import { getSearchResults } from "~/functions/getalldish";
 import { useRouter } from "next/router";
+import { useState } from "react";
 
 export async function getServerSideProps(context : GetServerSidePropsContext) {
 
@@ -81,12 +82,28 @@ const Profile = ({ params }: InferGetServerSidePropsType<typeof getServerSidePro
   } catch {}
 
   const router = useRouter();
+  const recentarr = params.recent;
+
+  const [recentpage, setRecentPage] = useState(1);
+  const [recentperpage] = useState(6);
+  const indexoflast = recentpage * recentperpage;
+  const indexoffirst = indexoflast - recentperpage;
+  const currentrecent = recentarr.slice(indexoffirst, indexoflast);
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(recentarr.length / recentperpage); i++) {
+      pageNumbers.push(i);
+  }
+  const paginate = (number: number) => {
+      if (number >= 1 && number <= Math.ceil(recentarr.length / recentperpage)) {
+        setRecentPage(number);
+      }
+  };
 
   return (
     <>
       <main className="flex min-h-screen flex-col bg-gradient-to-tr from-[#313131] to-[#000000]">
         <Navbar loggedin={params.loggedin} authuser={params.user} items={JSON.parse(params.items)} />
-        <div className="container items-center gap-10 px-4 py-10 justify-center max-w-6xl m-auto grid grid-cols-1 text-white text-center text-xl">
+        <div className="container items-center gap-10 px-4 py-10 justify-center max-w-6xl m-auto grid grid-cols-1 text-white text-xl">
             <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem] text-center">
                 <span className="text-[#DB6310]">Your </span>Account
             </h1>
@@ -95,22 +112,25 @@ const Profile = ({ params }: InferGetServerSidePropsType<typeof getServerSidePro
             <p>Created - {new Date(params.updated.toString()).toDateString()}</p>
             <div id="recent">
               <h2 className="text-left max-w-6xl underline">Recent</h2>
-              {params.recent.map((meal: any) => 
+              {currentrecent.map((meal: any) => 
                   <>
-                    {console.log(parseFloat(((params.now_time - meal.time)/86400000).toFixed(0)), "d")}
-                    {console.log(parseFloat(((params.now_time - meal.time)/3600000).toFixed(0)), "h")}
-                    {console.log(parseFloat(((params.now_time - meal.time)/60000).toFixed(0)), "m")}
-                    {parseInt(((params.now_time - meal.time)/86400000).toFixed(0)) > 1 &&
-                      <p className="text-left text-gray-200 italic my-2" onClick={()=> router.push("/dish/" + meal.mealinfo.MealID)}>{meal.mealinfo.MealName} - {parseInt(((params.now_time - meal.time)/86400000).toFixed(0))}d</p>
+                    {parseFloat(((params.now_time - meal.time)/86400000).toFixed(0)) > 1 &&
+                      <p className="text-left text-gray-200 italic my-2" onClick={()=> router.push("/dish/" + meal.mealinfo.MealID)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/86400000).toFixed(0))}d</p>
                     }
-                    {parseInt(((params.now_time - meal.time)/3600000).toFixed(0)) > 1 && parseInt(((params.now_time - meal.time)/86400000).toFixed(0)) <= 1 &&
-                      <p className="text-left text-gray-200 italic my-2" onClick={()=> router.push("/dish/" + meal.mealinfo.MealID)}>{meal.mealinfo.MealName} - {parseInt(((params.now_time - meal.time)/3600000).toFixed(0))}h</p>
+                    {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0)) >= 1 && parseFloat(((params.now_time - meal.time)/86400000).toFixed(0)) <= 1 &&
+                      <p className="text-left text-gray-200 italic my-2" onClick={()=> router.push("/dish/" + meal.mealinfo.MealID)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0))}h</p>
                     }
-                    {parseFloat(((params.now_time - meal.time)/60000).toFixed(0)) < 1 &&
+                    {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0)) < 1 &&
                       <p className="text-left text-gray-200 italic my-2" onClick={()=> router.push("/dish/" + meal.mealinfo.MealID)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/60000).toFixed(0))}m</p>
                     }
                   </>
               )}
+              {recentarr &&
+                <>
+                  <button onClick={() => paginate(recentpage-1)} className="text-left m-2 text-white">PREV</button>
+                  <button onClick={() => paginate(recentpage+1)} className="text-left m-2 text-white">NEXT</button>
+                </>
+              }
             </div>
         </div>
       </main>
