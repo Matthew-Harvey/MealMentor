@@ -8,34 +8,40 @@
 
 import router from "next/router";
 
-const MealSearchResult = ({id, title, image, restaurantChain, isdemo }: any) => {
-    console.log(restaurantChain)
-  return (
-    <>
-        <article key={id} className="rounded-xl m-auto w-96 cursor-pointer shadow bg-[#313131] p-2 my-4 hover:scale-105 ease-in-out transition" onClick={() => router.push("/dish/" + id + isdemo)}>
-            <div className="flex items-center gap-2 text-left">
-                <img
-                    alt="No Image"
-                    src={image.toString()}
-                    className="h-32 w-32 rounded-full object-cover"
-                />
-                <div>
-                <h3 className="text-2xl font-medium text-white">{title}</h3>
+const MealSearchResult = ({id, title, image, restaurantChain, isdemo, type }: any) => {
 
-                <div className="flow-root">
-                    <ul className="-m-1 flex flex-wrap">
-                        <li className="p-1 leading-none">
-                            {restaurantChain &&
-                                <p className="text-lg font-medium text-gray-300 italic">From {restaurantChain}</p>
-                            }
-                        </li>
-                    </ul>
+    let url: string;
+    if (type == "recipes") {
+        url = "/recipe/" + id + isdemo
+    } else {
+        url = "/menuitem/" + id + isdemo
+    }
+    return (
+        <>
+            <article key={id} className="rounded-xl m-auto w-96 cursor-pointer shadow bg-[#313131] p-2 my-4 hover:scale-105 ease-in-out transition" onClick={() => router.push(url)}>
+                <div className="flex items-center gap-2 text-left">
+                    <img
+                        alt="No Image"
+                        src={image.toString()}
+                        className="h-32 w-32 rounded-full object-cover"
+                    />
+                    <div>
+                    <h3 className="text-2xl font-medium text-white">{title}</h3>
+
+                    <div className="flow-root">
+                        <ul className="-m-1 flex flex-wrap">
+                            <li className="p-1 leading-none">
+                                {restaurantChain &&
+                                    <p className="text-lg font-medium text-gray-300 italic">From {restaurantChain}</p>
+                                }
+                            </li>
+                        </ul>
+                    </div>
+                    </div>
                 </div>
-                </div>
-            </div>
-        </article>
-    </>
-  );
+            </article>
+        </>
+    );
 };
 
 export default MealSearchResult;

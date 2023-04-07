@@ -27,7 +27,7 @@ import { getSearchResults } from "~/functions/getalldish";
 
 export async function getServerSideProps(context : GetServerSidePropsContext) {
     const isdemo = context.query.demo;
-    const dishid = context.query.dishid;
+    const dishid = context.query.itemid;
 
     const conn = connect(config);
     const getDetails = await conn.execute("SELECT * FROM meals WHERE MealID = ?", [dishid]);
@@ -87,7 +87,7 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
     }
 }
 
-const DishPage = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const RecipePage = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
     const dishdetails = JSON.parse(params.dishdetails);
     const authInsert = api.db.InsertUser.useMutation();
     const updateInstructIngred = api.example.UpdateInstructIngredient.useMutation();
@@ -221,7 +221,7 @@ const DishPage = ({ params }: InferGetServerSidePropsType<typeof getServerSidePr
     );
 };
 
-export default DishPage;
+export default RecipePage;
 
 function delay(milliseconds: number){
     return new Promise(resolve => {

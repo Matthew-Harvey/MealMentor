@@ -26,6 +26,7 @@ const Navbar = ({loggedin, authuser, items} : any) => {
         // the string searched and for the second the results.
         console.log(string, results, "ENTER PRESSED")
     }
+
     
     const handleOnHover = (result:any) => {
         // the item hovered
@@ -33,8 +34,12 @@ const Navbar = ({loggedin, authuser, items} : any) => {
     }
     
     const handleOnSelect = (item:any) => {
-        // the item selected
-        router.push("/dish/" + item.id + isdemo);
+        console.log(item);
+        if (item.type == "recipes") {
+            router.push("/recipe/" + item.id + isdemo);
+        } else {
+            router.push("/menuitem/" + item.id + isdemo);
+        }
     }
     
     const handleOnFocus = () => {

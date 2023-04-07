@@ -54,7 +54,7 @@ const Home = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>
 
   return (
     <>
-      <main className="flex min-h-screen flex-col bg-gradient-to-tr from-[#313131] to-[#000000]">
+      <main className="flex min-h-screen pb-10 flex-col bg-gradient-to-tr from-[#313131] to-[#000000]">
         <Navbar loggedin={loggedin} authuser={auth.user} items={JSON.parse(params.items)} />
         <div className="container items-center gap-10 px-4 py-10 justify-center max-w-6xl m-auto">
             <div className="grid grid-cols-5">

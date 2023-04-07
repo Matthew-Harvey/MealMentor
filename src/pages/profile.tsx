@@ -86,6 +86,7 @@ const Profile = ({ params }: InferGetServerSidePropsType<typeof getServerSidePro
   const router = useRouter();
   const recentarr = params.recent;
   recentarr.sort((a, b) => b.time - a.time);
+  console.log(recentarr)
 
   const [recentpage, setRecentPage] = useState(1);
   const [recentperpage] = useState(6);
@@ -115,14 +116,30 @@ const Profile = ({ params }: InferGetServerSidePropsType<typeof getServerSidePro
                     <h2 className="text-left underline text-2xl font-semibold">Recent</h2>
                     {currentrecent.map((meal: any) => 
                         <>
-                          {parseFloat(((params.now_time - meal.time)/86400000).toFixed(0)) > 1 &&
-                            <p className="text-left text-gray-200 my-4" onClick={()=> router.push("/dish/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/86400000).toFixed(0))}d</p>
-                          }
-                          {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0)) >= 1 && parseFloat(((params.now_time - meal.time)/86400000).toFixed(0)) <= 1 &&
-                            <p className="text-left text-gray-200 my-4" onClick={()=> router.push("/dish/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0))}h</p>
-                          }
-                          {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0)) < 1 &&
-                            <p className="text-left text-gray-200 my-4" onClick={()=> router.push("/dish/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/60000).toFixed(0))}m</p>
+                          {meal.mealinfo.MealType == "recipes" ? 
+                            <>
+                              {parseFloat(((params.now_time - meal.time)/86400000).toFixed(0)) > 1 &&
+                                <p className="text-left text-gray-200 my-4" onClick={()=> router.push("/recipe/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/86400000).toFixed(0))}d</p>
+                              }
+                              {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0)) >= 1 && parseFloat(((params.now_time - meal.time)/86400000).toFixed(0)) <= 1 &&
+                                <p className="text-left text-gray-200 my-4" onClick={()=> router.push("/recipe/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0))}h</p>
+                              }
+                              {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0)) < 1 &&
+                                <p className="text-left text-gray-200 my-4" onClick={()=> router.push("/recipe/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/60000).toFixed(0))}m</p>
+                              }
+                            </>
+                          :
+                            <>
+                              {parseFloat(((params.now_time - meal.time)/86400000).toFixed(0)) > 1 &&
+                                <p className="text-left text-gray-200 my-4" onClick={()=> router.push("/menuitem/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/86400000).toFixed(0))}d</p>
+                              }
+                              {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0)) >= 1 && parseFloat(((params.now_time - meal.time)/86400000).toFixed(0)) <= 1 &&
+                                <p className="text-left text-gray-200 my-4" onClick={()=> router.push("/menuitem/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0))}h</p>
+                              }
+                              {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0)) < 1 &&
+                                <p className="text-left text-gray-200 my-4" onClick={()=> router.push("/menuitem/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/60000).toFixed(0))}m</p>
+                              }
+                            </>
                           }
                         </>
                     )}

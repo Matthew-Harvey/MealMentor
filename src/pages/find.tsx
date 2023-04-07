@@ -113,7 +113,7 @@ const Find = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>
                       {api_test.data ? 
                         display_result.map((meal: any) => 
                             <>
-                                <MealSearchResult title={meal.title} id={meal.id} image={meal.image} restaurantChain={meal.restaurantChain} isdemo={isdemo} />
+                                <MealSearchResult title={meal.title} id={meal.id} image={meal.image} restaurantChain={meal.restaurantChain} isdemo={isdemo} type={typeSearch} />
                             </>
                           )
                       : ""}

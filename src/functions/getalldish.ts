@@ -11,7 +11,7 @@ export async function getSearchResults () {
     const resultarr: { id: any; name: any; }[] = [];
     AllMeals.rows.forEach(meal => {
         // @ts-ignore
-        const appendres = {id: meal.MealID, name:meal.MealName};
+        const appendres = {id: meal.MealID, name:meal.MealName, type:meal.MealType};
         resultarr.push(appendres);
     });
     return JSON.stringify(resultarr);
