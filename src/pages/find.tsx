@@ -59,8 +59,8 @@ const Find = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>
 
   //const resetdb = api.db.reset_tables.useQuery();
 
-  const [inputval, setInputVal] = useState("Pasta");
-  const [typeSearch, settypeSearch] = useState("all")
+  const [inputval, setInputVal] = useState("");
+  const [typeSearch, settypeSearch] = useState("recipes")
   const [hasEnter, setHasEnter] = useState(false);
   const [queryCount, setQuerycount] = useState(1);
   
@@ -103,9 +103,7 @@ const Find = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>
                 {hasEnter == false && <p className="text-2xl text-white text-center">Please enter a search query and select type of result.</p>}
                 <input value={inputval} onChange={(e) => setInputVal(e.target.value)} className="p-2 m-auto rounded-xl text-black text-md w-80 h-12" type="search" onKeyDown={handleKeyDown} disabled={api_test.isLoading || queryCount > 5}></input>
                 <select id="type" value={typeSearch} onChange={(e) => {settypeSearch(e.target.value)}} className="w-80 h-12 m-auto bg-gray-50 border border-gray-300 text-gray-900 text-m rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                    <option value="all">All</option>
                     <option value="menuitem">Menu Items</option>
-                    <option value="products">Products</option>
                     <option value="recipes">Recipes</option>
                 </select>
                 <div className="text-2xl text-white text-center">

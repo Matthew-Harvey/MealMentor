@@ -81,9 +81,10 @@ const Home = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>
                   relative bottom-0 left-0 rounded-3xl w-auto h-72 md:h-96 z-10 overflow-visible rotate-45 lg:mb-32 lg:-mt-32 lg:mr-32 lg:-ml-32 md:mb-28 md:-mt-28 md:mr-28 md:-ml-28
                   sm:mb-40 sm:-mt-0 sm:mr-40 sm:-ml-12 mb-10 -mt-12 mr-10 -ml-10
                 " />
+                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" className="w-full m-auto h-full -z-50 lg:mb-80 lg:-mt-40 lg:mr-80 lg:-ml-40 md:mb-32 md:-mt-32 md:mr-32 md:-ml-32 hidden md:flex" viewBox="0 0 1422 800"><g stroke-width="20" stroke="hsl(30, 100%, 40%)" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="18.5 35" transform="rotate(326, 711, 400)"><path d="M322.5 11.5Q904.5 101.5 711 400Q414.5 598.5 1099.5 788.5 " marker-end="url(#SvgjsMarker3482)" marker-start="url(#SvgjsMarker3483)"></path></g><defs><marker markerWidth="6.5" markerHeight="6.5" refX="3.25" refY="3.25" viewBox="0 0 6.5 6.5" orient="auto" id="SvgjsMarker3482"><polygon points="0,6.5 2.1666666666666665,3.25 0,0 6.5,3.25" fill="hsl(30, 100%, 40%)"></polygon></marker><marker markerWidth="6.5" markerHeight="6.5" refX="3.25" refY="3.25" viewBox="0 0 6.5 6.5" orient="auto" id="SvgjsMarker3483"><polygon points="0,3.25 6.5,0 4.333333333333333,3.25 6.5,6.5" fill="hsl(30, 100%, 40%)"></polygon></marker></defs></svg>
             </div>
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:flex md:gap-8 mt-10">
+          <div className="grid grid-cols-1 gap-4 sm:flex md:gap-8 mt-10 z-40">
             {loggedin == false ?
              <>
                 <Link

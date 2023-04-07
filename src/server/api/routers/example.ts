@@ -80,16 +80,6 @@ export const exampleRouter = createTRPCRouter({
             )
           }
         }
-        if (input.type == "products") {
-          getResults = await axios.get("https://api.spoonacular.com/food/products/search?query=" + input.text + "&apiKey=" + process.env.FOOD_APIKEY);
-          for (let mealnum in getResults.data.products) {
-            let meal = {id: getResults.data.products[mealnum].id, title: getResults.data.products[mealnum].title, image: getResults.data.products[mealnum].image};
-            mealjson.push(meal);
-            await conn.execute("INSERT IGNORE INTO meals (MealID, MealName, Response, MealType) VALUES (?,?,?,?)", 
-              [getResults.data.products[mealnum].id, getResults.data.products[mealnum].title, JSON.stringify(meal), input.type]
-            )
-          }
-        }
         if (input.type == "recipes") {
           getResults = await axios.get("https://api.spoonacular.com/recipes/complexSearch?query=" + input.text + "&apiKey=" + process.env.FOOD_APIKEY);
           for (let mealnum in getResults.data.results) {
@@ -97,28 +87,6 @@ export const exampleRouter = createTRPCRouter({
             mealjson.push(meal);
             await conn.execute("INSERT IGNORE INTO meals (MealID, MealName, Response, MealType) VALUES (?,?,?,?)", 
               [getResults.data.results[mealnum].id, getResults.data.results[mealnum].title, JSON.stringify(meal), input.type]
-            )
-          }
-        } 
-        if (input.type == "all") {
-          let numbers: number[] = [];
-          while (numbers.length < 4) {
-            let randomNumber = Math.floor(Math.random() * 11); // generates a random number between 0-10
-            if (!numbers.includes(randomNumber)) { // checks if the number is already in the array
-              numbers.push(randomNumber); // if it's not in the array, add it to the array
-            }
-          }
-          getResults = await axios.get("https://api.spoonacular.com/food/search?query=" + input.text + "&apiKey=" + process.env.FOOD_APIKEY);
-          for (let num in numbers) {
-            let meal = {id: getResults.data.searchResults[0].results[num].id, title: getResults.data.searchResults[0].results[num].name, image: getResults.data.searchResults[0].results[num].image};
-            mealjson.push(meal);
-            await conn.execute("INSERT IGNORE INTO meals (MealID, MealName, Response, MealType) VALUES (?,?,?,?)", 
-              [getResults.data.searchResults[0].results[num].id, getResults.data.searchResults[0].results[num].name, JSON.stringify(meal), input.type]
-            )
-            meal = {id: getResults.data.searchResults[1].results[num].id, title: getResults.data.searchResults[1].results[num].name, image: getResults.data.searchResults[1].results[num].image};
-            mealjson.push(meal);
-            await conn.execute("INSERT IGNORE INTO meals (MealID, MealName, Response, MealType) VALUES (?,?,?,?)", 
-              [getResults.data.searchResults[1].results[num].id, getResults.data.searchResults[1].results[num].name, JSON.stringify(meal), input.type]
             )
           }
         }
