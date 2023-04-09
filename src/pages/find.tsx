@@ -94,7 +94,7 @@ const Find = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>
     <>
       <main className="flex min-h-screen flex-col bg-gradient-to-tr from-[#313131] to-[#000000]">
         <Navbar loggedin={params.loggedin} authuser={params.user} items={JSON.parse(params.items)} />
-        <div className="container items-center gap-10 px-4 py-10 justify-center max-w-6xl m-auto grid grid-cols-1">
+        <div className="container items-center gap-10 px-4 py-10 justify-center max-w-6xl mx-auto grid grid-cols-1">
           <h1 className="text-5xl lg:text-8xl font-extrabold tracking-tight text-white sm:text-[5rem] text-center m-auto">
             <span className="text-[#DB6310]">Find</span> a dish
           </h1>

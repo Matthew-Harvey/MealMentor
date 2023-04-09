@@ -86,8 +86,8 @@ const Profile = ({ params }: InferGetServerSidePropsType<typeof getServerSidePro
   const router = useRouter();
   const recentarr = params.recent;
   recentarr.sort((a, b) => b.time - a.time);
-  console.log(recentarr)
 
+  const [select_option, setSelectOption] = useState(0);
   const [recentpage, setRecentPage] = useState(1);
   const [recentperpage] = useState(6);
   const indexoflast = recentpage * recentperpage;
@@ -103,68 +103,101 @@ const Profile = ({ params }: InferGetServerSidePropsType<typeof getServerSidePro
       }
   };
 
+  const button_class = "w-1/2 m-auto rounded-lg bg-[#DB6310] px-2 py-4 text-base font-semibold leading-2 text-black shadow-md hover:bg-orange-500 ease-in-out transition";
+  const button_class_selected = "w-1/2 m-auto rounded-lg bg-orange-400 px-2 py-4 text-base font-semibold leading-2 text-black shadow-md ease-in-out transition cursor-auto";
+
   return (
     <>
       <main className="flex min-h-screen flex-col bg-gradient-to-tr from-[#313131] to-[#000000]">
         <Navbar loggedin={params.loggedin} authuser={params.user} items={JSON.parse(params.items)} />
-        <div className="container items-center gap-10 px-4 py-10 justify-center m-auto grid grid-cols-1 text-white text-xl max-w-sm md:max-w-6xl">
+        <div className="container items-center gap-10 px-4 py-10 justify-center grid grid-cols-1 text-white text-xl max-w-sm md:max-w-6xl mx-auto">
             <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem] text-center">
                 <span className="text-[#DB6310]">Your </span>Profile
             </h1>
-            <div className="grid grid-cols-1 md:grid-cols-3">
-                <div id="recent" className="col-span-2">
-                    <h2 className="text-left underline text-2xl font-semibold">Recent</h2>
-                    {currentrecent.map((meal: any) => 
-                        <>
-                          {meal.mealinfo.MealType == "recipes" ? 
+            <div className="grid grid-cols-1 md:grid-cols-3 bg-[#313131] p-6 rounded-lg">
+                <div className="grid grid-cols-1 h-40">
+                  {select_option == 0 ?
+                    <button onClick={()=> setSelectOption(0)} className={button_class_selected}>
+                        Account
+                    </button>
+                  :
+                    <button onClick={()=> setSelectOption(0)} className={button_class}>
+                        Account
+                    </button>
+                  }
+                  {select_option == 1 ?
+                    <button onClick={()=> setSelectOption(1)} className={button_class_selected}>
+                        Recent
+                    </button>
+                  :
+                    <button onClick={()=> setSelectOption(1)} className={button_class}>
+                        Recent
+                    </button>
+                  }
+                </div>
+                <div className="md:col-span-2">
+                    {select_option == 1 && 
+                      <div id="recent" className="">
+                        <h2 className="text-left underline text-4xl font-semibold">Recent</h2>
+                        {currentrecent.map((meal: any) => 
                             <>
-                              {parseFloat(((params.now_time - meal.time)/86400000).toFixed(0)) > 1 &&
-                                <p className="text-left text-gray-200 my-4" onClick={()=> router.push("/recipe/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/86400000).toFixed(0))}d</p>
-                              }
-                              {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0)) >= 1 && parseFloat(((params.now_time - meal.time)/86400000).toFixed(0)) <= 1 &&
-                                <p className="text-left text-gray-200 my-4" onClick={()=> router.push("/recipe/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0))}h</p>
-                              }
-                              {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0)) < 1 &&
-                                <p className="text-left text-gray-200 my-4" onClick={()=> router.push("/recipe/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/60000).toFixed(0))}m</p>
+                              {meal.mealinfo.MealType == "recipes" ? 
+                                <>
+                                  {parseFloat(((params.now_time - meal.time)/86400000).toFixed(0)) > 1 &&
+                                    <p className="text-left text-gray-200 my-4 cursor-pointer" onClick={()=> router.push("/recipe/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/86400000).toFixed(0))}d</p>
+                                  }
+                                  {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0)) >= 1 && parseFloat(((params.now_time - meal.time)/86400000).toFixed(0)) <= 1 &&
+                                    <p className="text-left text-gray-200 my-4 cursor-pointer" onClick={()=> router.push("/recipe/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0))}h</p>
+                                  }
+                                  {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0)) < 1 &&
+                                    <p className="text-left text-gray-200 my-4 cursor-pointer" onClick={()=> router.push("/recipe/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/60000).toFixed(0))}m</p>
+                                  }
+                                </>
+                              :
+                                <>
+                                  {parseFloat(((params.now_time - meal.time)/86400000).toFixed(0)) > 1 &&
+                                    <p className="text-left text-gray-200 my-4" onClick={()=> router.push("/menuitem/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/86400000).toFixed(0))}d</p>
+                                  }
+                                  {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0)) >= 1 && parseFloat(((params.now_time - meal.time)/86400000).toFixed(0)) <= 1 &&
+                                    <p className="text-left text-gray-200 my-4" onClick={()=> router.push("/menuitem/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0))}h</p>
+                                  }
+                                  {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0)) < 1 &&
+                                    <p className="text-left text-gray-200 my-4" onClick={()=> router.push("/menuitem/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/60000).toFixed(0))}m</p>
+                                  }
+                                </>
                               }
                             </>
-                          :
-                            <>
-                              {parseFloat(((params.now_time - meal.time)/86400000).toFixed(0)) > 1 &&
-                                <p className="text-left text-gray-200 my-4" onClick={()=> router.push("/menuitem/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/86400000).toFixed(0))}d</p>
-                              }
-                              {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0)) >= 1 && parseFloat(((params.now_time - meal.time)/86400000).toFixed(0)) <= 1 &&
-                                <p className="text-left text-gray-200 my-4" onClick={()=> router.push("/menuitem/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0))}h</p>
-                              }
-                              {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0)) < 1 &&
-                                <p className="text-left text-gray-200 my-4" onClick={()=> router.push("/menuitem/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/60000).toFixed(0))}m</p>
-                              }
-                            </>
-                          }
-                        </>
-                    )}
-                    {recentarr &&
-                      <>
-                        {recentpage > 1 &&
-                          <button onClick={() => paginate(recentpage-1)} className="text-left m-2 text-black bg-white p-2 rounded-xl mb-10">
-                            <svg viewBox="0 0 24 24" className="w-8 h-8" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <title></title> <g id="Complete"> <g id="arrow-left"> <g> <polyline data-name="Right" fill="none" id="Right-2" points="7.6 7 2.5 12 7.6 17" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></polyline> <line fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" x1="21.5" x2="4.8" y1="12" y2="12"></line> </g> </g> </g> </g></svg>
-                          </button>
+                        )}
+                        {recentarr &&
+                          <>
+                            {recentpage > 1 &&
+                              <button onClick={() => paginate(recentpage-1)} className="text-left m-2 text-black bg-white p-2 rounded-xl mb-10">
+                                <svg viewBox="0 0 24 24" className="w-8 h-8" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <title></title> <g id="Complete"> <g id="arrow-left"> <g> <polyline data-name="Right" fill="none" id="Right-2" points="7.6 7 2.5 12 7.6 17" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></polyline> <line fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" x1="21.5" x2="4.8" y1="12" y2="12"></line> </g> </g> </g> </g></svg>
+                              </button>
+                            }
+                            {recentpage < Math.ceil(recentarr.length / recentperpage) &&
+                              <button onClick={() => paginate(recentpage+1)} className="text-left m-2 text-black bg-white p-2 rounded-xl mb-10">
+                                <svg viewBox="0 0 24.00 24.00" className="w-8 h-8" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <title></title> <g id="Complete"> <g id="arrow-right"> <g> <polyline data-name="Right" fill="none" id="Right-2" points="16.4 7 21.5 12 16.4 17" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.4"></polyline> <line fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.4" x1="2.5" x2="19.2" y1="12" y2="12"></line> </g> </g> </g> </g></svg>
+                              </button>
+                            }
+                          </>
                         }
-                        {recentpage < Math.ceil(recentarr.length / recentperpage) &&
-                          <button onClick={() => paginate(recentpage+1)} className="text-left m-2 text-black bg-white p-2 rounded-xl mb-10">
-                            <svg viewBox="0 0 24.00 24.00" className="w-8 h-8" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <title></title> <g id="Complete"> <g id="arrow-right"> <g> <polyline data-name="Right" fill="none" id="Right-2" points="16.4 7 21.5 12 16.4 17" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.4"></polyline> <line fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.4" x1="2.5" x2="19.2" y1="12" y2="12"></line> </g> </g> </g> </g></svg>
-                          </button>
-                        }
-                      </>
+                    </div>
+                    }
+                    {select_option == 0 &&
+                      <div className="m-auto grid grid-cols-4">
+                        <div>
+                          <Image width="200" height="200" src={params.user?.picture} alt="pfp" className="rounded-full w-40 h-40 ring-1 ring-gray-400 ring-opacity-40 ring-offset-gray-800 ring-offset-2" referrerPolicy="no-referrer" />
+                        </div>
+                        <div className="col-span-3">
+                          <p className="py-2 font-normal text-xl">Name: {params.user?.name}</p>
+                          <p className="py-2 font-normal text-xl">Email: {params.user?.email}</p>
+                          <p className="py-2 font-normal text-xl">Created: {new Date(params.updated.toString()).toDateString()}</p>
+                        </div>
+                      </div>
                     }
                 </div>
-                <div className="m-auto">
-                  <Image width="200" height="200" src={params.user?.picture} alt="pfp" className="rounded-full w-60 h-60 ring-1 ring-gray-400 ring-opacity-40 ring-offset-gray-800 ring-offset-2" referrerPolicy="no-referrer" />
-                  <p className="my-2 font-normal text-xl">Name: {params.user?.name}</p>
-                  <p className="my-2 font-normal text-xl">Email: {params.user?.email}</p>
-                  <p className="my-2 font-normal text-xl">Created: {new Date(params.updated.toString()).toDateString()}</p>
-                </div>
-              </div>
+            </div>
         </div>
       </main>
     </>

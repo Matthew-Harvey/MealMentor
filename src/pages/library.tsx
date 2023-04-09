@@ -77,7 +77,7 @@ const Library = ({ params }: InferGetServerSidePropsType<typeof getServerSidePro
     <>
       <main className="flex min-h-screen flex-col bg-gradient-to-tr from-[#313131] to-[#000000]">
         <Navbar loggedin={params.loggedin} authuser={params.user} items={JSON.parse(params.items)} />
-        <div className="container items-center gap-10 px-4 py-10 justify-center max-w-6xl m-auto grid grid-cols-1">
+        <div className="container items-center gap-10 px-4 py-10 justify-center max-w-6xl mx-auto grid grid-cols-1">
             <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem] text-center">
                 <span className="text-[#DB6310]">Your </span>Library
             </h1>
