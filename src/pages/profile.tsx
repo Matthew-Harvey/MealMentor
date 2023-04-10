@@ -43,8 +43,11 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
 
   const conn = connect(config);
   const GetUpdated = await conn.execute("SELECT updated FROM users WHERE UserID = ?", [user?.user.sub]);
-  // @ts-ignore
-  const updated = GetUpdated.rows[0].updated.toString();
+  let updated = "";
+  try {
+    // @ts-ignore
+    updated = GetUpdated.rows[0].updated.toString();
+  } catch {updated = new Date().toDateString()}
   const now_time = new Date().getTime();
 
   const RecentView = await conn.execute("SELECT * FROM user_recentview WHERE UserID = ?", [user?.user.sub]);
@@ -89,7 +92,7 @@ const Profile = ({ params }: InferGetServerSidePropsType<typeof getServerSidePro
 
   const [select_option, setSelectOption] = useState(0);
   const [recentpage, setRecentPage] = useState(1);
-  const [recentperpage] = useState(6);
+  const [recentperpage] = useState(8);
   const indexoflast = recentpage * recentperpage;
   const indexoffirst = indexoflast - recentperpage;
   const currentrecent = recentarr.slice(indexoffirst, indexoflast);
@@ -139,48 +142,48 @@ const Profile = ({ params }: InferGetServerSidePropsType<typeof getServerSidePro
                     {select_option == 1 && 
                       <div id="recent" className="">
                         <h2 className="text-left underline text-4xl font-semibold">Recent</h2>
-                        {currentrecent.map((meal: any) => 
+                        {currentrecent.map((meal: any) =>
                             <>
                               {meal.mealinfo.MealType == "recipes" ? 
                                 <>
                                   {parseFloat(((params.now_time - meal.time)/86400000).toFixed(0)) > 1 &&
-                                    <p className="text-left text-gray-200 my-4 cursor-pointer" onClick={()=> router.push("/recipe/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/86400000).toFixed(0))}d</p>
+                                    <p className="text-left text-gray-200 my-2 cursor-pointer" onClick={()=> router.push("/recipe/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/86400000).toFixed(0))}d</p>
                                   }
                                   {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0)) >= 1 && parseFloat(((params.now_time - meal.time)/86400000).toFixed(0)) <= 1 &&
-                                    <p className="text-left text-gray-200 my-4 cursor-pointer" onClick={()=> router.push("/recipe/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0))}h</p>
+                                    <p className="text-left text-gray-200 my-2 cursor-pointer" onClick={()=> router.push("/recipe/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0))}h</p>
                                   }
                                   {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0)) < 1 &&
-                                    <p className="text-left text-gray-200 my-4 cursor-pointer" onClick={()=> router.push("/recipe/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/60000).toFixed(0))}m</p>
+                                    <p className="text-left text-gray-200 my-2 cursor-pointer" onClick={()=> router.push("/recipe/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/60000).toFixed(0))}m</p>
                                   }
                                 </>
                               :
                                 <>
                                   {parseFloat(((params.now_time - meal.time)/86400000).toFixed(0)) > 1 &&
-                                    <p className="text-left text-gray-200 my-4" onClick={()=> router.push("/menuitem/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/86400000).toFixed(0))}d</p>
+                                    <p className="text-left text-gray-200 my-2" onClick={()=> router.push("/menuitem/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/86400000).toFixed(0))}d</p>
                                   }
                                   {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0)) >= 1 && parseFloat(((params.now_time - meal.time)/86400000).toFixed(0)) <= 1 &&
-                                    <p className="text-left text-gray-200 my-4" onClick={()=> router.push("/menuitem/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0))}h</p>
+                                    <p className="text-left text-gray-200 my-2" onClick={()=> router.push("/menuitem/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0))}h</p>
                                   }
                                   {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0)) < 1 &&
-                                    <p className="text-left text-gray-200 my-4" onClick={()=> router.push("/menuitem/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/60000).toFixed(0))}m</p>
+                                    <p className="text-left text-gray-200 my-2" onClick={()=> router.push("/menuitem/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/60000).toFixed(0))}m</p>
                                   }
                                 </>
                               }
                             </>
                         )}
                         {recentarr &&
-                          <>
-                            {recentpage > 1 &&
-                              <button onClick={() => paginate(recentpage-1)} className="text-left m-2 text-black bg-white p-2 rounded-xl mb-10">
-                                <svg viewBox="0 0 24 24" className="w-8 h-8" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <title></title> <g id="Complete"> <g id="arrow-left"> <g> <polyline data-name="Right" fill="none" id="Right-2" points="7.6 7 2.5 12 7.6 17" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></polyline> <line fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" x1="21.5" x2="4.8" y1="12" y2="12"></line> </g> </g> </g> </g></svg>
-                              </button>
-                            }
-                            {recentpage < Math.ceil(recentarr.length / recentperpage) &&
-                              <button onClick={() => paginate(recentpage+1)} className="text-left m-2 text-black bg-white p-2 rounded-xl mb-10">
-                                <svg viewBox="0 0 24.00 24.00" className="w-8 h-8" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <title></title> <g id="Complete"> <g id="arrow-right"> <g> <polyline data-name="Right" fill="none" id="Right-2" points="16.4 7 21.5 12 16.4 17" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.4"></polyline> <line fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.4" x1="2.5" x2="19.2" y1="12" y2="12"></line> </g> </g> </g> </g></svg>
-                              </button>
-                            }
-                          </>
+                            <>
+                              {recentpage > 1 &&
+                                <button onClick={() => paginate(recentpage-1)} className="text-left my-2 text-black bg-white p-1.5 rounded-xl mb-10">
+                                  <svg viewBox="0 0 24 24" className="w-8 h-8" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <title></title> <g id="Complete"> <g id="arrow-left"> <g> <polyline data-name="Right" fill="none" id="Right-2" points="7.6 7 2.5 12 7.6 17" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></polyline> <line fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" x1="21.5" x2="4.8" y1="12" y2="12"></line> </g> </g> </g> </g></svg>
+                                </button>
+                              }
+                              {recentpage < Math.ceil(recentarr.length / recentperpage) &&
+                                <button onClick={() => paginate(recentpage+1)} className="text-left my-2 text-black bg-white p-1.5 rounded-xl mb-10">
+                                  <svg viewBox="0 0 24.00 24.00" className="w-8 h-8" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <title></title> <g id="Complete"> <g id="arrow-right"> <g> <polyline data-name="Right" fill="none" id="Right-2" points="16.4 7 21.5 12 16.4 17" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.4"></polyline> <line fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.4" x1="2.5" x2="19.2" y1="12" y2="12"></line> </g> </g> </g> </g></svg>
+                                </button>
+                              }
+                            </>
                         }
                     </div>
                     }

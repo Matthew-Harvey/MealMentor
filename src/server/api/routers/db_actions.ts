@@ -51,10 +51,15 @@ export const DBrouter = createTRPCRouter({
   
       CREATE TABLE meals (
         MealID varchar(255) NOT NULL,
-        MealName varchar(255) NOT NULL,
+        MealName varchar(255),
         Response varchar(255),
         HowToMake TEXT,
         MealType varchar(255) NOT NULL,
+        Taste varchar(255),
+        Nutrition TEXT,
+        Ingredients TEXT,
+        Equipment TEXT,
+        Price TEXT,
         PRIMARY KEY (MealID)
       )
   
