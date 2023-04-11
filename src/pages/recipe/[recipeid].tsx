@@ -227,7 +227,7 @@ const RecipePage = ({ params }: InferGetServerSidePropsType<typeof getServerSide
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10">
                             {!generatedBios &&
                                 <button
-                                    className="p-3 bg-green-400 text-white transition hover:scale-105 rounded-lg mt-10"
+                                    className="p-3 bg-green-800 text-white transition hover:scale-105 rounded-lg mt-10"
                                     onClick={(e) => generateBio(e)}
                                     >
                                     Generate Instructions/Ingredients
@@ -236,9 +236,9 @@ const RecipePage = ({ params }: InferGetServerSidePropsType<typeof getServerSide
                             {params.loggedin &&
                                 <>
                                     {AddedLib ?
-                                        <button onClick={RemoveFromLibrary} className="p-3 bg-red-400 text-white transition hover:scale-105 rounded-lg mt-10">Remove from library</button>
+                                        <button onClick={RemoveFromLibrary} className="p-3 bg-red-800 text-white transition hover:scale-105 rounded-lg mt-10">Remove from library</button>
                                         :
-                                        <button onClick={AddToLibrary} className="p-3 bg-green-400 text-white transition hover:scale-105 rounded-lg mt-10">Add to library</button>
+                                        <button onClick={AddToLibrary} className="p-3 bg-green-800 text-white transition hover:scale-105 rounded-lg mt-10">Add to library</button>
                                     }
                                 </>
                             }
@@ -283,14 +283,14 @@ const RecipePage = ({ params }: InferGetServerSidePropsType<typeof getServerSide
                             <p className="text-white text-lg my-1">Spiciness:</p>
                             <p className="text-white text-base my-1">{params.taste.spiciness.toFixed(0)} scoville units</p>
                         </div>
-                        <div>
-                            <p className="text-white text-lg my-1">Equipment:</p>
-                            <div className="grid grid-cols-1">
+                        <div className="bg-white rounded-lg">
+                            <p className="text-black text-lg m-1">Equipment:</p>
+                            <div className="grid grid-cols-1 md:grid-cols-2">
                                 {params.equipment.map((equipment: any) => 
                                     <>
-                                        <div key={equipment.name}>
-                                            <p className="text-white text-base my-1">{equipment.name}</p>
-                                            <img src={"https://spoonacular.com/cdn/equipment_500x500/" + equipment.image} className="rounded-xl h-auto w-24" alt={equipment.name}/>
+                                        <div key={equipment.name} className="p-4">
+                                            <p className="text-black text-base my-1">{equipment.name}</p>
+                                            <img src={"https://spoonacular.com/cdn/equipment_500x500/" + equipment.image} className="rounded-xl h-auto w-32 p-2" alt={equipment.name}/>
                                         </div>
                                     </>
                                 )} 
