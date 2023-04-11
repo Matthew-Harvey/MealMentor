@@ -35,10 +35,20 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
     const getDetails = await conn.execute("SELECT * FROM meals WHERE MealID = ?", [dishid]);
 
     let HowToMake = null;
-    // @ts-ignore
-    if (getDetails.rows[0].HowToMake) {
+    try {
         // @ts-ignore
-        HowToMake = getDetails.rows[0].HowToMake;
+        if (getDetails.rows[0].HowToMake) {
+            // @ts-ignore
+            HowToMake = getDetails.rows[0].HowToMake;
+        }
+    }
+    catch {
+        return {
+            redirect: {
+                permanent: false,
+                destination: "/",
+            }
+        }
     }
 
     let user = await getSession(context.req, context.res);
@@ -78,7 +88,7 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
         for (var x in getEquipment.data.equipment) {
             equipment.push(getEquipment.data.equipment[x]);
         }
-        await conn.execute("UPDATE meals SET Taste = ? WHERE MealID = ?", [JSON.stringify(equipment), dishid]);
+        await conn.execute("UPDATE meals SET Equipment = ? WHERE MealID = ?", [JSON.stringify(equipment), dishid]);
     }
     
     const dateMili = new Date().getTime();
@@ -197,7 +207,7 @@ const RecipePage = ({ params }: InferGetServerSidePropsType<typeof getServerSide
             }
         }
     };
-
+    
     return (
         <>
             <main className="flex min-h-screen flex-col bg-gradient-to-tr from-[#313131] to-[#000000]">
@@ -234,7 +244,7 @@ const RecipePage = ({ params }: InferGetServerSidePropsType<typeof getServerSide
                             }
                     </div>
                     {generatedBios && 
-                        <div className="grid grid-cols-2 max-w-6xl">
+                        <div className="grid grid-cols-2 max-w-6xl mb-6">
                             <div className="col-span-2 text-white">
                                 <h2 className="bold underline text-lg mb-1">Ingredients:</h2>
                                 <p>{generatedBios.split("Ingredients:")[1]?.toString().split("Instructions:")[0]?.toString()}</p>
@@ -275,9 +285,18 @@ const RecipePage = ({ params }: InferGetServerSidePropsType<typeof getServerSide
                         </div>
                         <div>
                             <p className="text-white text-lg my-1">Equipment:</p>
-                            {params.equipment.map((equipment: any) => 
-                                <p key={equipment.name} className="text-white text-base my-1">{equipment.name}</p>
-                            )} 
+                            <div className="grid grid-cols-1">
+                                {params.equipment.map((equipment: any) => 
+                                    <>
+                                        <div key={equipment.name}>
+                                            <p className="text-white text-base my-1">{equipment.name}</p>
+                                            <img src={"https://spoonacular.com/cdn/equipment_500x500/" + equipment.image} className="rounded-xl h-auto w-24" alt={equipment.name}/>
+                                        </div>
+                                    </>
+                                )} 
+                            </div>
+                        </div>
+                        <div>
                         </div>
                     </div>
                 </div>
