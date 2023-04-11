@@ -1,28 +1,46 @@
-# MealMentor - ChatGPT API Hackathon Project
+# MealMentor
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+ChatGPT API Hackathon Project hosted by DonTheDeveloper.
 
-## What's next? How do I make an app with this?
+## About
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+This project is a Cooking App featuring food and chatgpt apis to gather recipes, generate instructions/ingredients and save to a user library; try it out using a feature full demo version with one click. Built in one month as part of a hackathon from March -> April 2023.
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+Technology used:
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+- TailwindCSS
+- Typescript
+- React
+- Nextjs
+- TRPC
+- PlanetScale (MySQL)
+- Auth0
+- ChatGPT API
+- Spoonacular API
+- Vercel (hosting)
 
-## Learn More
+## How to use locally
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+In order to use this locally, follow the steps below:
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+1. Download from this repository.
+2. Run "npm install" to install each dependency.
+3. Get all required keys setup in a .env file.
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+.ENV requirements
 
-## How do I deploy this?
+AUTH0_SECRET="key_goes_here"
+AUTH0_BASE_URL="url_goes_here"
+AUTH0_ISSUER_BASE_URL="auth0_url_goes_here"
+AUTH0_CLIENT_ID="clientid_goes_here"
+AUTH0_CLIENT_SECRET="key_goes_here"
+OPENAI_API_KEY="key_goes_here"
+DATABASE_URL='url_goes_here'
+FOOD_APIKEY='key_goes_here'
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+4. Run "npm run dev"
+5. Enjoy!
+
+## Deployment
+
+This project is deployed directly onto Vercel. To view the published project, [click here](https://mymealmentor.vercel.app/)
