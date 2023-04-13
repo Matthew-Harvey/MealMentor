@@ -61,16 +61,16 @@ const MetaTags: NextPage = () => {
               <link href='/ric-matkowski-T8SD7bwyxHU-unsplash-removebg-preview.png' sizes='72x72' rel='apple-touch-icon-precomposed' />
               <link href='/ric-matkowski-T8SD7bwyxHU-unsplash-removebg-preview.png' sizes='57x57' rel='apple-touch-icon-precomposed' />
 
-              <meta http-equiv='Page-Enter' content='RevealTrans(Duration=2.0,Transition=2)' />
-              <meta http-equiv='Page-Exit' content='RevealTrans(Duration=3.0,Transition=12)' />
+              <meta httpEquiv='Page-Enter' content='RevealTrans(Duration=2.0,Transition=2)' />
+              <meta httpEquiv='Page-Exit' content='RevealTrans(Duration=3.0,Transition=12)' />
               <meta name='mssmarttagspreventparsing' content='true' />
-              <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible" />
+              <meta content="IE=edge,chrome=1" httpEquiv="X-UA-Compatible" />
               <meta name='msapplication-starturl' content='https://mymealmentor.vercel.app/' />
               <meta name='msapplication-window' content='width=800;height=600' />
               <meta name='msapplication-navbutton-color' content='red' />
               <meta name='application-name' content='MealMentor' />
               <meta name='msapplication-tooltip' content='MealMentor - Find your dream food.' />
-              <meta http-equiv='cleartype' content='on' />
+              <meta httpEquiv='cleartype' content='on' />
         </Head>
     </>
   );

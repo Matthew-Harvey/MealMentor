@@ -22,7 +22,7 @@ import { demodetails } from "~/functions/demo";
 import Navbar from "~/components/Navbar";
 import { connect } from "@planetscale/database";
 import { config } from "~/server/api/routers/db_actions";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getSession } from "@auth0/nextjs-auth0";
 import { getSearchResults } from "~/functions/getalldish";
 import axios from "axios";
@@ -157,56 +157,56 @@ const RecipePage = ({ params }: InferGetServerSidePropsType<typeof getServerSide
         prompt = `Please give Instructions and Ingredients to make ${params.name}`;
     }
 
-    const generateBio = async (e: any) => {
-        e.preventDefault();
-        setGeneratedBios("");
-        let overall_value:string = "";
+    useEffect(() => {
+        const generateBio = async ()=> {
+            setGeneratedBios("");
+            let overall_value:string = "";
+            if (params.HowToMake != null) {
+                const splitMake = params.HowToMake.split("");
+                splitMake.forEach(async (letter: string) => {
+                    overall_value = overall_value + letter;
+                    setGeneratedBios((prev) => prev + letter);
+                });
+            } else {
 
-        if (params.HowToMake != null) {
-            const splitMake = params.HowToMake.split("");
-            splitMake.forEach(async (letter: string) => {
-                await delay(400);
-                overall_value = overall_value + letter;
-                setGeneratedBios((prev) => prev + letter);
-            });
-        } else {
-
-            const response = await fetch("/api/generate", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    prompt,
-                }),
-            });
-        
-            if (!response.ok) {
-                throw new Error(response.statusText);
+                const response = await fetch("/api/generate", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        prompt,
+                    }),
+                });
+            
+                if (!response.ok) {
+                    throw new Error(response.statusText);
+                }
+            
+                // This data is a ReadableStream
+                const data = response.body;
+                if (!data) {
+                    return;
+                }
+            
+                const reader = data.getReader();
+                const decoder = new TextDecoder();
+                let done = false;
+                while (!done) {
+                    const { value, done: doneReading } = await reader.read();
+                    done = doneReading;
+                    const chunkValue = decoder.decode(value);
+                    overall_value = overall_value + chunkValue;
+                    setGeneratedBios((prev) => prev + chunkValue);
+                }
+                if (done) {
+                    // @ts-ignore
+                    updateInstructIngred.mutate({dishid: params.dishid, HowToMake: overall_value})
+                }
             }
-        
-            // This data is a ReadableStream
-            const data = response.body;
-            if (!data) {
-                return;
-            }
-        
-            const reader = data.getReader();
-            const decoder = new TextDecoder();
-            let done = false;
-            while (!done) {
-                const { value, done: doneReading } = await reader.read();
-                done = doneReading;
-                const chunkValue = decoder.decode(value);
-                overall_value = overall_value + chunkValue;
-                setGeneratedBios((prev) => prev + chunkValue);
-            }
-            if (done) {
-                // @ts-ignore
-                updateInstructIngred.mutate({dishid: params.dishid, HowToMake: overall_value})
-            }
-        }
-    };
+        };
+        generateBio();
+    }, [])
     
     return (
         <>
@@ -221,18 +221,6 @@ const RecipePage = ({ params }: InferGetServerSidePropsType<typeof getServerSide
                             {dishdetails.restaurantChain &&
                                 <h2 className="font-semibold text-4xl mt-4 mb-10 text-[#DB6310]">From {dishdetails.restaurantChain}</h2>
                             }
-                        </div>
-                        <img src={dishdetails.image} alt="Dish Image" className="rounded-lg m-auto shadow-lg" />
-                    </div>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10">
-                            {!generatedBios &&
-                                <button
-                                    className="p-3 bg-green-800 text-white transition hover:scale-105 rounded-lg mt-10"
-                                    onClick={(e) => generateBio(e)}
-                                    >
-                                    Generate Instructions/Ingredients
-                                </button>
-                            }
                             {params.loggedin &&
                                 <>
                                     {AddedLib ?
@@ -242,18 +230,18 @@ const RecipePage = ({ params }: InferGetServerSidePropsType<typeof getServerSide
                                     }
                                 </>
                             }
-                    </div>
-                    {generatedBios && 
-                        <div className="grid grid-cols-2 max-w-6xl mb-6">
-                            <div className="col-span-2 text-white">
-                                <h2 className="bold underline text-lg mb-1">Ingredients:</h2>
-                                <p>{generatedBios.split("Ingredients:")[1]?.toString().split("Instructions:")[0]?.toString()}</p>
-                                <br />
-                                <h2 className="bold underline text-lg mb-1">Instructions:</h2>
-                                <p>{generatedBios.split("Instructions:")[1]?.toString()}</p>
-                            </div>
                         </div>
-                    }
+                        <img src={dishdetails.image} alt="Dish Image" className="rounded-lg m-auto shadow-lg" />
+                    </div>
+                    <div className="grid grid-cols-2 max-w-6xl mb-6 h-80">
+                        <div className="col-span-2 text-white">
+                            <h2 className="bold underline text-lg mb-1">Ingredients:</h2>
+                            <p>{generatedBios.split("Ingredients:")[1]?.toString().split("Instructions:")[0]?.toString()}</p>
+                            <br />
+                            <h2 className="bold underline text-lg mb-1">Instructions:</h2>
+                            <p>{generatedBios.split("Instructions:")[1]?.toString()}</p>
+                        </div>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-3">
                         <div>
                             <p className="text-white text-lg my-1">Sweetness:</p>
