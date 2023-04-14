@@ -140,57 +140,68 @@ const Profile = ({ params }: InferGetServerSidePropsType<typeof getServerSidePro
                 </div>
                 <div className="md:col-span-2">
                     {select_option == 1 && 
-                      <div id="recent" className="">
-                        <h2 className="text-left underline text-4xl font-semibold">Recent</h2>
+                      <div id="recent" className="text-center md:text-left">
+                        <h2 className="underline text-4xl font-semibold text-left mt-4 md:mt-0">Recent</h2>
                         {currentrecent.map((meal: any) =>
                             <>
                               {meal.mealinfo.MealType == "recipes" ? 
                                 <>
                                   {parseFloat(((params.now_time - meal.time)/86400000).toFixed(0)) > 1 &&
-                                    <p className="text-left text-gray-200 my-2 cursor-pointer" onClick={()=> router.push("/recipe/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/86400000).toFixed(0))}d</p>
+                                    <p className="text-left text-gray-200 my-4 md:my-2 cursor-pointer text-xl" onClick={()=> router.push("/recipe/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/86400000).toFixed(0))}d</p>
                                   }
                                   {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0)) >= 1 && parseFloat(((params.now_time - meal.time)/86400000).toFixed(0)) <= 1 &&
-                                    <p className="text-left text-gray-200 my-2 cursor-pointer" onClick={()=> router.push("/recipe/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0))}h</p>
+                                    <p className="text-left text-gray-200 my-4 md:my-2 cursor-pointer text-xl" onClick={()=> router.push("/recipe/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0))}h</p>
                                   }
                                   {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0)) < 1 &&
-                                    <p className="text-left text-gray-200 my-2 cursor-pointer" onClick={()=> router.push("/recipe/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/60000).toFixed(0))}m</p>
+                                    <p className="text-left text-gray-200 my-4 md:my-2 cursor-pointer text-xl" onClick={()=> router.push("/recipe/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/60000).toFixed(0))}m</p>
                                   }
                                 </>
                               :
                                 <>
                                   {parseFloat(((params.now_time - meal.time)/86400000).toFixed(0)) > 1 &&
-                                    <p className="text-left text-gray-200 my-2" onClick={()=> router.push("/menuitem/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/86400000).toFixed(0))}d</p>
+                                    <p className="text-left text-gray-200 my-4 md:my-2 cursor-pointer text-xl" onClick={()=> router.push("/menuitem/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/86400000).toFixed(0))}d</p>
                                   }
                                   {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0)) >= 1 && parseFloat(((params.now_time - meal.time)/86400000).toFixed(0)) <= 1 &&
-                                    <p className="text-left text-gray-200 my-2" onClick={()=> router.push("/menuitem/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0))}h</p>
+                                    <p className="text-left text-gray-200 my-4 md:my-2 cursor-pointer text-xl" onClick={()=> router.push("/menuitem/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0))}h</p>
                                   }
                                   {parseFloat(((params.now_time - meal.time)/3600000).toFixed(0)) < 1 &&
-                                    <p className="text-left text-gray-200 my-2" onClick={()=> router.push("/menuitem/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/60000).toFixed(0))}m</p>
+                                    <p className="text-left text-gray-200 my-4 md:my-2 cursor-pointer text-xl" onClick={()=> router.push("/menuitem/" + meal.mealinfo.MealID + isdemo)}>{meal.mealinfo.MealName} - {parseFloat(((params.now_time - meal.time)/60000).toFixed(0))}m</p>
                                   }
                                 </>
                               }
                             </>
                         )}
-                        {recentarr &&
-                            <>
-                              {recentpage > 1 &&
-                                <button onClick={() => paginate(recentpage-1)} className="text-left my-2 text-black bg-white p-1.5 rounded-xl mb-10">
-                                  <svg viewBox="0 0 24 24" className="w-8 h-8" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <title></title> <g id="Complete"> <g id="arrow-left"> <g> <polyline data-name="Right" fill="none" id="Right-2" points="7.6 7 2.5 12 7.6 17" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></polyline> <line fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" x1="21.5" x2="4.8" y1="12" y2="12"></line> </g> </g> </g> </g></svg>
-                                </button>
-                              }
-                              {recentpage < Math.ceil(recentarr.length / recentperpage) &&
-                                <button onClick={() => paginate(recentpage+1)} className="text-left my-2 text-black bg-white p-1.5 rounded-xl mb-10">
-                                  <svg viewBox="0 0 24.00 24.00" className="w-8 h-8" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <title></title> <g id="Complete"> <g id="arrow-right"> <g> <polyline data-name="Right" fill="none" id="Right-2" points="16.4 7 21.5 12 16.4 17" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.4"></polyline> <line fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.4" x1="2.5" x2="19.2" y1="12" y2="12"></line> </g> </g> </g> </g></svg>
-                                </button>
-                              }
-                            </>
-                        }
+                        <div className="w-full md:w-1/5 grid grid-cols-3">
+                          {recentarr &&
+                              <>
+                                {recentpage > 1 ?
+                                  <button onClick={() => paginate(recentpage-1)} className="text-left text-black bg-white p-1.5 rounded-xl my-6 m-auto">
+                                    <svg viewBox="0 0 24 24" className="w-8 h-8" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <title></title> <g id="Complete"> <g id="arrow-left"> <g> <polyline data-name="Right" fill="none" id="Right-2" points="7.6 7 2.5 12 7.6 17" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></polyline> <line fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" x1="21.5" x2="4.8" y1="12" y2="12"></line> </g> </g> </g> </g></svg>
+                                  </button>
+                                  :
+                                  <button disabled onClick={() => paginate(recentpage-1)} className="text-left text-black bg-gray-400 p-1.5 rounded-xl my-6 m-auto">
+                                    <svg viewBox="0 0 24 24" className="w-8 h-8" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <title></title> <g id="Complete"> <g id="arrow-left"> <g> <polyline data-name="Right" fill="none" id="Right-2" points="7.6 7 2.5 12 7.6 17" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></polyline> <line fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" x1="21.5" x2="4.8" y1="12" y2="12"></line> </g> </g> </g> </g></svg>
+                                  </button>
+                                }
+                                <p className="text-white text-xl m-auto p-2">{recentpage}</p>
+                                {recentpage < Math.ceil(recentarr.length / recentperpage) ?
+                                  <button onClick={() => paginate(recentpage+1)} className="text-left text-black bg-white p-1.5 rounded-xl my-6 m-auto">
+                                    <svg viewBox="0 0 24.00 24.00" className="w-8 h-8" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <title></title> <g id="Complete"> <g id="arrow-right"> <g> <polyline data-name="Right" fill="none" id="Right-2" points="16.4 7 21.5 12 16.4 17" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.4"></polyline> <line fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.4" x1="2.5" x2="19.2" y1="12" y2="12"></line> </g> </g> </g> </g></svg>
+                                  </button>
+                                  :
+                                  <button disabled onClick={() => paginate(recentpage+1)} className="text-left text-black bg-gray-400 p-1.5 rounded-xl my-6 m-auto">
+                                    <svg viewBox="0 0 24.00 24.00" className="w-8 h-8" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <title></title> <g id="Complete"> <g id="arrow-right"> <g> <polyline data-name="Right" fill="none" id="Right-2" points="16.4 7 21.5 12 16.4 17" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.4"></polyline> <line fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.4" x1="2.5" x2="19.2" y1="12" y2="12"></line> </g> </g> </g> </g></svg>
+                                  </button>
+                                }
+                              </>
+                          }
+                        </div>
                     </div>
                     }
                     {select_option == 0 &&
-                      <div className="m-auto grid grid-cols-4">
+                      <div className="m-auto grid grid-cols-1 md:grid-cols-5">
                         <div>
-                          <Image width="200" height="200" src={params.user?.picture} alt="pfp" className="rounded-full w-40 h-40 ring-1 ring-gray-400 ring-opacity-40 ring-offset-gray-800 ring-offset-2" referrerPolicy="no-referrer" />
+                          <Image width="200" height="200" src={params.user?.picture} alt="pfp" className="my-4 md:my-0 col-span-1 rounded-full w-auto h-auto ring-1 ring-gray-400 ring-opacity-40 ring-offset-gray-800 ring-offset-2" referrerPolicy="no-referrer" />
                         </div>
                         <div className="col-span-3">
                           <p className="py-2 font-normal text-xl">Name: {params.user?.name}</p>

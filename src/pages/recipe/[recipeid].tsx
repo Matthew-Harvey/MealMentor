@@ -233,7 +233,7 @@ const RecipePage = ({ params }: InferGetServerSidePropsType<typeof getServerSide
                         </div>
                         <img src={dishdetails.image} alt="Dish Image" className="rounded-lg m-auto shadow-lg" />
                     </div>
-                    <div className="grid grid-cols-2 max-w-6xl mb-6 h-80">
+                    <div className="grid grid-cols-2 max-w-6xl mb-10 h-1/5 mt-10">
                         <div className="col-span-2 text-white">
                             <h2 className="bold underline text-lg mb-1">Ingredients:</h2>
                             <p>{generatedBios.split("Ingredients:")[1]?.toString().split("Instructions:")[0]?.toString()}</p>

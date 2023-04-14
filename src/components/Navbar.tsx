@@ -104,9 +104,9 @@ const Navbar = ({loggedin, authuser, items} : any) => {
                             navbar ? "block" : "hidden"
                         }`}
                     >
-                        <ul className="items-center justify-center space-y-8 md:flex md:space-x-6 md:space-y-0">
+                        <ul className="items-center justify-center space-y-8 md:flex md:space-x-6 md:space-y-0 grid grid-cols-5 text-xl md:text-xl">
                             {loggedin && 
-                                <div className="w-60">
+                                <div className="w-full md:w-56 col-span-5">
                                     <ReactSearchAutocomplete
                                         items={items}
                                         onSearch={handleOnSearch}
@@ -120,19 +120,24 @@ const Navbar = ({loggedin, authuser, items} : any) => {
                                 </div>
                             }
                             {loggedin && 
-                                <Link className="text-white text-xl hover:text-[#DB6310]" href={"/find" + isdemo}>
+                                <Link className="text-white m-auto hover:text-[#DB6310] text-center md:text-left" href={"/find" + isdemo}>
                                     <p className="py-4 md:py-0">Find</p>
                                 </Link>
                             }
                             {loggedin && 
-                                <Link className="text-white text-xl hover:text-[#DB6310]" href={"/library" + isdemo}>
+                                <Link className="text-white m-auto hover:text-[#DB6310] text-center md:text-left" href={"/library" + isdemo}>
                                     <p className="py-4 md:py-0">Library</p>
                                 </Link>
                             }
-                            {loggedin ? <Link href="/api/auth/logout" className="text-white hover:text-[#DB6310] text-xl"><p className="py-4 md:py-0">Logout</p></Link> : <Link href="/api/auth/login" className="text-white hover:text-[#DB6310] text-xl"><p className="py-4 md:py-0">Sign In</p></Link>}
+                            <div className="col-span-1 md:hidden"></div>
+                            {loggedin ? 
+                                <Link href="/api/auth/logout" className="text-white m-auto hover:text-[#DB6310] text-center md:text-left"><p className="py-4 md:py-0">Logout</p></Link>
+                                : 
+                                <Link href="/api/auth/login" className="text-white m-auto hover:text-[#DB6310] text-center md:text-left"><p className="py-4 md:py-0">Sign In</p></Link>
+                            }
                             {loggedin && 
                                 <>
-                                    <Link className="bg-transparent" href={"/profile" + isdemo}>
+                                    <Link className="bg-transparent m-auto" href={"/profile" + isdemo}>
                                         <Image width="200" height="200" src={authuser?.picture} alt="pfp" className="rounded-full w-8 h-8 ring-1 ring-gray-400 ring-opacity-40 ring-offset-gray-800 ring-offset-2" referrerPolicy="no-referrer" />
                                     </Link>
                                 </>

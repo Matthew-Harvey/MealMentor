@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/require-await */
@@ -80,7 +81,6 @@ const Find = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>
   let display_result;
   if (api_test.data?.mealjson) {
     display_result = JSON.parse(api_test.data?.mealjson);
-    console.log(display_result);
   }
 
   let isdemo = "";
@@ -106,8 +106,11 @@ const Find = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>
           {params.loggedin ? 
             <>
                 {hasEnter == false && <p className="text-2xl text-white text-center">Please enter a search query and select type of result.</p>}
-                <input value={inputval} onChange={(e) => setInputVal(e.target.value)} placeholder="eg. Burger" className="p-2 m-auto rounded-xl text-black text-md w-96 h-12" type="search" onKeyDown={handleKeyDown} disabled={api_test.isLoading || queryCount > 5}></input>
-                <select id="type" value={typeSearch} onChange={(e) => {settypeSearch(e.target.value)}} className="w-96 h-12 m-auto bg-gray-50 border border-gray-300 text-gray-900 text-m rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                <div className="m-auto w-1/2">
+                  <input value={inputval} onChange={(e) => setInputVal(e.target.value)} placeholder="eg. Burger" className="p-2 rounded-l-lg text-black text-lg w-5/6" type="search" onKeyDown={handleKeyDown} disabled={api_test.isLoading || queryCount > 5}></input>
+                  <button className="bg-[#DB6310] p-2 rounded-r-lg w-1/6 text-lg text-black" onClick={QueryFind}>Go!</button>
+                </div>
+                <select id="type" value={typeSearch} onChange={(e) => {settypeSearch(e.target.value)}} className="w-1/2 m-auto bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-black focus:border-black block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
                     <option value="menuitem">Menu Items - WIP</option>
                     <option value="recipes">Recipes</option>
                 </select>
