@@ -22,8 +22,8 @@ const MetaTags: NextPage = () => {
               <meta name='designer' content='Matthew Harvey, matthewtlharvey@gmail.com' />
               <meta name='reply-to' content='matthewtlharvey@gmail.com' />
               <meta name='owner' content='Matthew Harvey, matthewtlharvey@gmail.com' />
-              <meta name='url' content='http://www.websiteaddrress.com' />
-              <meta name='identifier-URL' content='http://www.websiteaddress.com' />
+              <meta name='url' content='https://mymealmentor.vercel.app/' />
+              <meta name='identifier-URL' content='https://mymealmentor.vercel.app/' />
               <meta name='directory' content='submission' />
               <meta name='pagename' content='MealMentor' />
               <meta name='category' content='Cooking' />
@@ -47,7 +47,7 @@ const MetaTags: NextPage = () => {
               <meta name='og:email' content='matthewtlharvey@gmail.com' />
               <meta name='og:country-name' content='United Kingdom' />
 
-              <meta name="apple-mobile-web-app-title" content="My App" />
+              <meta name="apple-mobile-web-app-title" content="MealMentor" />
               <meta name='apple-mobile-web-app-capable' content='yes' />
               <meta name='apple-touch-fullscreen' content='yes' />
               <meta name='apple-mobile-web-app-status-bar-style' content='black' />
