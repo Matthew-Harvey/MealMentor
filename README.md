@@ -4,9 +4,15 @@ ChatGPT API Hackathon Project hosted by DonTheDeveloper.
 
 ## About
 
-This project is a Cooking App featuring food and chatgpt apis to gather recipes, generate instructions/ingredients and save to a user library; try it out using a feature full demo version with one click. Built in one month as part of a hackathon from March -> April 2023.
+This project is a Cooking App featuring food and chatgpt apis to gather recipes, generate instructions/ingredients and save to a user library; try it out using a feature full demo version with one click. 
 
-Technology used:
+Built in one month as part of a hackathon from March to April 2023.
+
+## Demo
+
+This project is deployed directly onto Vercel. View here: [mymealmentor.vercel.app](https://mymealmentor.vercel.app/)
+
+## Technologies
 
 - TailwindCSS
 - Typescript
@@ -19,15 +25,22 @@ Technology used:
 - Spoonacular API
 - Vercel (hosting)
 
-## How to use locally
+## How to deploy locally
 
-In order to use this locally, follow the steps below:
+Follow the steps below:
 
 1. Download from this repository.
-2. Run "npm install" to install each dependency.
+2. Install each dependency.
+
+```typescript
+
+npm install
+
+```
+ 
 3. Get all required keys setup in a .env file.
 
-.ENV requirements
+```typescript
 
 AUTH0_SECRET="key_goes_here"
 AUTH0_BASE_URL="url_goes_here"
@@ -38,9 +51,14 @@ OPENAI_API_KEY="key_goes_here"
 DATABASE_URL='url_goes_here'
 FOOD_APIKEY='key_goes_here'
 
-4. Run "npm run dev"
+```
+
+4. Run locally
+   
+```typescript
+
+ npm run dev
+ 
+```
+
 5. Enjoy!
-
-## Deployment
-
-This project is deployed directly onto Vercel. To view the published project, [click here](https://mymealmentor.vercel.app/)
