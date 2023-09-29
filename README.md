@@ -1,14 +1,16 @@
 # MealMentor
 ChatGPT API Hackathon Project hosted by DonTheDeveloper.
 
+![Thumbnail Image](https://mtlh.vercel.app/assets/mealmentor_thumb.66db444f_1JCSli.webp)
+
 ## About
-This project is a Cooking App featuring food and chatgpt apis to gather recipes, generate instructions/ingredients and save to a user library; try it out using a feature full demo version with one click. 
+This project is a Cooking App featuring food and chatgpt apis to gather recipes, generate instructions/ingredients and save to a user library; try it out using a feature full demo version with one click.
 
 Built main features as part of a hackathon from March -> April 2023.
 
 ## Demo
 This project is deployed directly onto Vercel. 
-View here: [mymealmentor.vercel.app](https://mymealmentor.vercel.app/)
+[mymealmentor.vercel.app](https://mymealmentor.vercel.app/)
 
 ## Technologies
 - TailwindCSS
@@ -30,10 +32,10 @@ Follow the steps below:
 npm install
 ```
 4. Create api keys from the following sources:
-    1. Auth0, https://manage.auth0.com/dashboard/
-    2. OpenAI/ChatGPT, https://platform.openai.com/account/api-keys
-    3. PlanetScale (DATABASE_URL), https://app.planetscale.com/
-    4. FoodAPI, https://spoonacular.com/food-api/console#Profile
+    1. [Auth0](https://manage.auth0.com/dashboard/)
+    2. [OpenAI/ChatGPT](https://platform.openai.com/account/api-keys)
+    3. [PlanetScale](https://app.planetscale.com/)
+    4. [FoodAPI](https://spoonacular.com/food-api/console#Profile)
 
 4. Get all required keys setup in a .env file.
 ```typescript
