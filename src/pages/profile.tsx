@@ -16,8 +16,8 @@
 import { type GetServerSidePropsContext, type InferGetServerSidePropsType} from "next";
 import { demodetails } from "~/functions/demo";
 import Navbar from "~/components/Navbar";
-import { connect } from "@planetscale/database";
-import { config } from "~/server/api/routers/db_actions";
+// import { connect } from "@planetscale/database";
+import { client } from "~/server/api/routers/db_actions";
 import { getSession } from "@auth0/nextjs-auth0";
 import { getSearchResults } from "~/functions/getalldish";
 import { useRouter } from "next/router";
@@ -41,8 +41,9 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
 
   const items = await getSearchResults();
 
-  const conn = connect(config);
-  const GetUpdated = await conn.execute("SELECT updated FROM users WHERE UserID = ?", [user?.user.sub]);
+  const GetUpdated = await client.execute({
+      sql: "SELECT updated FROM users WHERE UserID = ?", args: [user?.user.sub]
+  });
   let updated = "";
   try {
     // @ts-ignore
@@ -50,11 +51,15 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
   } catch {updated = new Date().toDateString()}
   const now_time = new Date().getTime();
 
-  const RecentView = await conn.execute("SELECT * FROM user_recentview WHERE UserID = ?", [user?.user.sub]);
+  const RecentView = await client.execute({
+      sql: "SELECT * FROM user_recentview WHERE UserID = ?", args: [user?.user.sub]
+  });
   const arr = [];
   for (const x in RecentView.rows) {
-      // @ts-ignore
-      const dish =  await conn.execute("SELECT * FROM meals WHERE MealID = ?", [RecentView.rows[x].MealID]);
+      const dish = await client.execute({
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+        sql: "SELECT * FROM meals WHERE MealID = ?", args: [RecentView.rows[x]!.MealID?.toString()!]
+    });
       // @ts-ignore
       try{arr.push({mealinfo: dish.rows[0], time: RecentView.rows[x].time_viewed})}catch{}
   }
@@ -88,6 +93,8 @@ const Profile = ({ params }: InferGetServerSidePropsType<typeof getServerSidePro
 
   const router = useRouter();
   const recentarr = params.recent;
+  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   recentarr.sort((a, b) => b.time - a.time);
 
   const [select_option, setSelectOption] = useState(0);

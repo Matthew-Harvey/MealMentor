@@ -3,9 +3,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/rules-of-hooks */
-import { connect } from "@planetscale/database";
+// import { connect } from "@planetscale/database";
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { config } from "~/server/api/routers/db_actions";
+import { client } from "~/server/api/routers/db_actions";
 
 function makeid(length: number) {
     let result = '';
@@ -21,13 +21,13 @@ function makeid(length: number) {
 
 export default async function NoSleep(req: NextApiRequest, res: NextApiResponse<any>) {
     
-    const conn = connect(config);
+    await client.execute("CREATE TABLE IF NOT EXISTS nosleep (example varchar(10))");
 
-    await conn.execute("CREATE TABLE IF NOT EXISTS nosleep (example varchar(10))");
+    await client.execute({
+      sql: "INSERT INTO nosleep VALUES (?)", args: [makeid(10)]
+    });
 
-    await conn.execute("INSERT INTO nosleep VALUES (?)", [makeid(10)]);
-
-    await conn.execute("DROP TABLE IF EXISTS nosleep");
+    await client.execute("DROP TABLE IF EXISTS nosleep");
 
     res.status(200).json({"fixedsleep": true});
 }

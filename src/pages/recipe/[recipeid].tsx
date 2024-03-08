@@ -20,8 +20,8 @@ import { type GetServerSidePropsContext, type InferGetServerSidePropsType} from 
 import { api } from "~/utils/api";
 import { demodetails } from "~/functions/demo";
 import Navbar from "~/components/Navbar";
-import { connect } from "@planetscale/database";
-import { config } from "~/server/api/routers/db_actions";
+// import { connect } from "@planetscale/database";
+import { client } from "~/server/api/routers/db_actions";
 import { useEffect, useRef, useState } from "react";
 import { getSession } from "@auth0/nextjs-auth0";
 import { getSearchResults } from "~/functions/getalldish";
@@ -31,8 +31,10 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
     const isdemo = context.query.demo;
     const dishid = context.query.recipeid;
 
-    const conn = connect(config);
-    const getDetails = await conn.execute("SELECT * FROM meals WHERE MealID = ?", [dishid]);
+    const getDetails = await client.execute({
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+        sql: "SELECT * FROM meals WHERE MealID = ?", args: [dishid?.toString()!]
+    });
 
     let HowToMake = null;
     try {
@@ -74,7 +76,10 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
         const getTaste = await axios.get("https://api.spoonacular.com/recipes/" + dishid + "/tasteWidget.json?apiKey=" + process.env.FOOD_APIKEY);
         taste = {sweetness: getTaste.data.sweetness, saltiness: getTaste.data.saltiness, sourness: getTaste.data.sourness, bitterness: getTaste.data.bitterness,
             savoriness: getTaste.data.savoriness, fattiness: getTaste.data.fattiness, spiciness: getTaste.data.spiciness};
-        await conn.execute("UPDATE meals SET Taste = ? WHERE MealID = ?", [JSON.stringify(taste), dishid]);
+        await client.execute({
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+            sql: "UPDATE meals SET Taste = ? WHERE MealID = ?", args: [JSON.stringify(taste), dishid?.toString()!]
+        });
     }
 
     let equipment: string[];
@@ -88,21 +93,27 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
         for (var x in getEquipment.data.equipment) {
             equipment.push(getEquipment.data.equipment[x]);
         }
-        await conn.execute("UPDATE meals SET Equipment = ? WHERE MealID = ?", [JSON.stringify(equipment), dishid]);
+        await client.execute({
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+            sql: "UPDATE meals SET Equipment = ? WHERE MealID = ?", args: [JSON.stringify(equipment), dishid?.toString()!]
+        });
     }
     
     const dateMili = new Date().getTime();
-    if (getDetails.size > 0) {
+    if (getDetails.rows.length > 0) {
         if (loggedin == true) {
-            // @ts-ignore
-            const conn = connect(config);
-            await conn.execute("DELETE FROM user_recentview WHERE MealID = ? AND UserID = ?", [dishid, user?.user.sub]);
-            await conn.execute("INSERT IGNORE INTO user_recentview (MealID, UserID, time_viewed) VALUES (?,?,?)", [dishid, user?.user.sub, dateMili]);
+            await client.execute({
+                sql: "DELETE FROM user_recentview WHERE MealID = ? AND UserID = ?", args: [dishid, user?.user.sub]
+            });
+            await client.execute({
+                sql: "INSERT INTO user_recentview (MealID, UserID, time_viewed) VALUES (?,?,?)", args: [dishid, user?.user.sub, dateMili]
+            });
         }
-        const conn = connect(config);
-        const LibraryCheck = await conn.execute("SELECT * FROM user_library WHERE MealID = ? AND UserID = ?", [dishid, user?.user.sub]);
+        const LibraryCheck = await client.execute({
+            sql: "SELECT * FROM user_library WHERE MealID = ? AND UserID = ?", args: [dishid, user?.user.sub]
+        });
         let islibrary = false;
-        if (LibraryCheck.size > 0){
+        if (LibraryCheck.rows.length > 0){
             islibrary = true;
         }
         if (isdemo == "true") {
@@ -127,10 +138,12 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
 }
 
 const RecipePage = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+    // @ts-ignore
     const dishdetails = JSON.parse(params.dishdetails);
+    // @ts-ignore
     const authInsert = api.db.InsertUser.useMutation();
+    // @ts-ignore
     const updateInstructIngred = api.example.UpdateInstructIngredient.useMutation();
-
     // @ts-ignore
     const AddLibrary = api.example.addDishLibrary.useMutation({dishid: params.dishid, userid: params.user.sub});const RemoveLibrary = api.example.removeDishLibrary.useMutation({dishid: params.dishid, userid: params.user.sub});
     const [AddedLib, SetAddedLib] = useState(params.islibrary);
@@ -162,6 +175,7 @@ const RecipePage = ({ params }: InferGetServerSidePropsType<typeof getServerSide
             setGeneratedBios("");
             let overall_value:string = "";
             if (params.HowToMake != null) {
+                // @ts-ignore
                 const splitMake = params.HowToMake.split("");
                 splitMake.forEach(async (letter: string) => {
                     overall_value = overall_value + letter;
@@ -216,6 +230,7 @@ const RecipePage = ({ params }: InferGetServerSidePropsType<typeof getServerSide
                     <div className="grid md:grid-cols-4 grid-cols-1">
                         <div className="col-span-3">
                             <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
+                                {/* @ts-ignore */}
                                 <span className="text-white">{params.name}</span>
                             </h1>
                             {dishdetails.restaurantChain &&

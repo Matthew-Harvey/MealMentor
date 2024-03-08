@@ -19,8 +19,8 @@ import { type GetServerSidePropsContext, type InferGetServerSidePropsType} from 
 import { api } from "~/utils/api";
 import { demodetails } from "~/functions/demo";
 import Navbar from "~/components/Navbar";
-import { connect } from "@planetscale/database";
-import { config } from "~/server/api/routers/db_actions";
+// import { connect } from "@planetscale/database";
+import { client } from "~/server/api/routers/db_actions";
 import { useRef, useState } from "react";
 import { getSession } from "@auth0/nextjs-auth0";
 import { getSearchResults } from "~/functions/getalldish";
@@ -29,8 +29,10 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
     const isdemo = context.query.demo;
     const dishid = context.query.itemid;
 
-    const conn = connect(config);
-    const getDetails = await conn.execute("SELECT * FROM meals WHERE MealID = ?", [dishid]);
+    const getDetails = await client.execute({
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+        sql: "SELECT * FROM meals WHERE MealID = ?", args: [dishid?.toString()!]
+    });
 
     let HowToMake = null;
     // @ts-ignore
@@ -53,17 +55,20 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
     const items = await getSearchResults();
     
     const dateMili = new Date().getTime();
-    if (getDetails.size > 0) {
+    if (getDetails.rows.length > 0) {
         if (loggedin == true) {
-            // @ts-ignore
-            const conn = connect(config);
-            await conn.execute("DELETE FROM user_recentview WHERE MealID = ? AND UserID = ?", [dishid, user?.user.sub]);
-            await conn.execute("INSERT IGNORE INTO user_recentview (MealID, UserID, time_viewed) VALUES (?,?,?)", [dishid, user?.user.sub, dateMili]);
+            await client.execute({
+                sql: "DELETE FROM user_recentview WHERE MealID = ? AND UserID = ?", args: [dishid, user?.user.sub]
+            });
+            await client.execute({
+                sql: "INSERT IGNORE INTO user_recentview (MealID, UserID, time_viewed) VALUES (?,?,?)", args: [dishid, user?.user.sub, dateMili]
+            });
         }
-        const conn = connect(config);
-        const LibraryCheck = await conn.execute("SELECT * FROM user_library WHERE MealID = ? AND UserID = ?", [dishid, user?.user.sub]);
+        const LibraryCheck = await client.execute({
+            sql: "SELECT * FROM user_library WHERE MealID = ? AND UserID = ?", args: [dishid, user?.user.sub]
+        });
         let islibrary = false;
-        if (LibraryCheck.size > 0){
+        if (LibraryCheck.rows.length > 0){
             islibrary = true;
         }
         if (isdemo == "true") {
@@ -88,6 +93,7 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
 }
 
 const RecipePage = ({ params }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+    // @ts-ignore
     const dishdetails = JSON.parse(params.dishdetails);
     const authInsert = api.db.InsertUser.useMutation();
     const updateInstructIngred = api.example.UpdateInstructIngredient.useMutation();
@@ -124,6 +130,7 @@ const RecipePage = ({ params }: InferGetServerSidePropsType<typeof getServerSide
         let overall_value:string = "";
 
         if (params.HowToMake != null) {
+            // @ts-ignore
             const splitMake = params.HowToMake.split("");
             splitMake.forEach(async (letter: string) => {
                 await delay(400);
@@ -177,6 +184,7 @@ const RecipePage = ({ params }: InferGetServerSidePropsType<typeof getServerSide
                 <div className="grid md:grid-cols-4 grid-cols-1">
                     <div className="col-span-3">
                         <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
+                            {/* @ts-ignore */}
                             <span className="text-white">{params.name}</span>
                         </h1>
                         {dishdetails.restaurantChain &&

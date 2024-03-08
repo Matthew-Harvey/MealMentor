@@ -13,8 +13,8 @@
 import { type GetServerSidePropsContext, type InferGetServerSidePropsType} from "next";
 import { demodetails } from "~/functions/demo";
 import Navbar from "~/components/Navbar";
-import { connect } from "@planetscale/database";
-import { config } from "~/server/api/routers/db_actions";
+// import { connect } from "@planetscale/database";
+import { client } from "~/server/api/routers/db_actions";
 import { getSession } from "@auth0/nextjs-auth0";
 import MealSearchResult from "~/components/MealSearchResult";
 import { getSearchResults } from "~/functions/getalldish";
@@ -36,12 +36,15 @@ export async function getServerSideProps(context : GetServerSidePropsContext) {
 
   const items = await getSearchResults();
 
-  const conn = connect(config);
-  const LibraryCheck = await conn.execute("SELECT * FROM user_library WHERE UserID = ?", [user?.user.sub]);
+  const LibraryCheck = await client.execute({
+      sql: "SELECT * FROM user_library WHERE UserID = ?", args: [user?.user.sub]
+  });
   const arr = [];
   for (const x in LibraryCheck.rows) {
-      // @ts-ignore
-      const dish =  await conn.execute("SELECT * FROM meals WHERE MealID = ?", [LibraryCheck.rows[x].MealID]);
+      const dish = await client.execute({
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+        sql: "SELECT * FROM meals WHERE MealID = ?", args: [LibraryCheck.rows[x]!.MealID?.toString()!]
+      });
       // @ts-ignore
       try{arr.push(dish.rows[0])}catch{}
   }
